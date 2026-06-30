@@ -1,0 +1,1432 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工具3 · 老客服务任务助手</title>
+<style>
+:root{
+  --bg:#fafafa;--surface:#ffffff;
+  --ink:#171717;--ink-2:#4d4d4d;--ink-3:#8f8f8f;
+  --line:#eaeaea;--line-2:#ebebeb;--line-3:#e6e6e6;
+  --gray-100:#f2f2f2;--gray-200:#ebebeb;--gray-300:#e6e6e6;
+  --alpha-100:#0000000d;--alpha-200:#00000015;--alpha-300:#0000001a;
+  --blue-100:#f0f7ff;--blue-700:#006bff;--blue-1000:#002359;
+  --red-100:#ffeeef;--red-800:#ea001d;
+  --amber-100:#fff6de;--amber-800:#ff9300;--amber-900:#aa4d00;
+  --green-100:#ecfdec;--green-700:#28a948;--green-900:#107d32;
+  --purple-100:#faf0ff;--purple-700:#a000f8;--purple-900:#7d00cc;
+  --shadow-card:0 2px 2px rgba(0,0,0,.04);
+  --shadow-pop:0 1px 1px rgba(0,0,0,.02),0 4px 8px -4px rgba(0,0,0,.04),0 16px 24px -8px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Geist","Inter","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:20px;letter-spacing:-0.01em;
+  font-feature-settings:"cv11","ss01";
+  -webkit-font-smoothing:antialiased;
+  min-width:1200px;
+}
+button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
+button{cursor:pointer}
+
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* ============ Sidebar ============ */
+.side{
+  position:sticky;top:0;height:100vh;
+  background:var(--surface);border-right:1px solid var(--line);
+  padding:20px 12px;display:flex;flex-direction:column;gap:4px;
+}
+.brand{
+  padding:8px 12px 16px;border-bottom:1px solid var(--line);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.brand-mark{
+  width:28px;height:28px;border-radius:6px;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-weight:600;font-size:14px;letter-spacing:0;
+}
+.brand-title{font-size:14px;font-weight:600;line-height:20px}
+.brand-title small{display:block;font-size:12px;font-weight:400;color:var(--ink-3);line-height:16px;margin-top:2px}
+
+.store-switch{padding:0 4px;margin-bottom:8px}
+.store-switch label{display:block;font-size:12px;color:var(--ink-3);margin-bottom:6px;padding-left:8px}
+.store-select{
+  width:100%;height:32px;border:1px solid var(--alpha-200);border-radius:6px;
+  background:var(--surface);padding:0 10px;font-size:13px;color:var(--ink);
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%238f8f8f' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.store-select:focus{outline:none;border-color:var(--blue-700);box-shadow:0 0 0 3px rgba(0,107,255,.15)}
+
+.nav{display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.nav button{
+  border:0;background:transparent;text-align:left;
+  padding:8px 12px;border-radius:6px;
+  font-size:13px;color:var(--ink-2);font-weight:400;
+  display:flex;align-items:center;gap:10px;
+}
+.nav button:hover{background:var(--gray-100);color:var(--ink)}
+.nav button.active{background:var(--gray-100);color:var(--ink);font-weight:500}
+.nav-num{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;width:14px}
+.nav button.active .nav-num{color:var(--ink-2)}
+
+.side-foot{margin-top:auto;padding:12px;border-top:1px solid var(--line);color:var(--ink-3);font-size:12px;line-height:16px}
+
+/* ============ Main ============ */
+.main{padding:24px 32px 40px;max-width:1320px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:20px}
+h1{margin:0;font-size:24px;font-weight:600;line-height:32px;letter-spacing:-0.96px}
+.top-sub{font-size:13px;color:var(--ink-3);margin-top:6px}
+.top-right{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3)}
+.top-date{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px;
+  background:var(--surface);border:1px solid var(--alpha-200);border-radius:6px;
+  font-variant-numeric:tabular-nums;color:var(--ink-2);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green-700)}
+
+/* ============ Flow steps ============ */
+.flow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:24px}
+.step{
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;cursor:pointer;transition:border-color .15s;
+}
+.step:hover{border-color:var(--alpha-300)}
+.step.active{border-color:var(--ink);box-shadow:var(--shadow-card)}
+.step b{display:block;font-size:13px;font-weight:500;color:var(--ink)}
+.step .step-num{display:block;font-size:11px;color:var(--ink-3);margin-bottom:2px;font-variant-numeric:tabular-nums}
+
+/* ============ Views ============ */
+.view{display:none}.view.active{display:block}
+
+/* ============ Cards ============ */
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px;box-shadow:var(--shadow-card);
+}
+.card-flat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h2{margin:0 0 16px;font-size:16px;font-weight:600;line-height:24px;letter-spacing:-0.32px}
+.card h3{margin:0 0 8px;font-size:14px;font-weight:600;line-height:20px}
+
+.layout-2{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}
+
+/* ============ Stats ============ */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.stat{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;
+}
+.stat b{display:block;font-size:24px;font-weight:600;line-height:32px;letter-spacing:-0.96px;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--ink-3);margin-top:2px;display:block}
+
+/* ============ Table ============ */
+.tbl-wrap{margin:-4px}
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:11px;text-align:left;color:var(--ink-3);font-weight:500;
+  padding:8px 12px;border-bottom:1px solid var(--line);
+  letter-spacing:0;text-transform:uppercase;
+}
+td{
+  padding:12px;font-size:13px;color:var(--ink-2);vertical-align:middle;
+  border-bottom:1px solid var(--line);
+}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--gray-100)}
+tbody tr.active{background:var(--blue-100)}
+tbody tr.active td:first-child{box-shadow:inset 2px 0 0 var(--blue-700)}
+td.col-name{color:var(--ink);font-weight:500}
+td.col-tag{color:var(--ink)}
+
+.chip{
+  display:inline-flex;align-items:center;gap:4px;padding:2px 8px;
+  border-radius:999px;font-size:11px;font-weight:500;
+  font-variant-numeric:tabular-nums;
+}
+.chip-tag{background:var(--gray-100);color:var(--ink-2);border:1px solid var(--line)}
+.chip-high{background:var(--red-100);color:var(--red-800)}
+.chip-mid{background:var(--amber-100);color:var(--amber-900)}
+.chip-low{background:var(--gray-100);color:var(--ink-2)}
+.chip-days{background:var(--gray-100);color:var(--ink-2)}
+
+/* ============ Buttons ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:32px;padding:0 10px;border-radius:6px;
+  font-size:13px;font-weight:500;letter-spacing:-0.01em;
+  border:1px solid transparent;background:transparent;color:var(--ink);
+  transition:background .12s,border-color .12s;
+}
+.btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-primary:hover{background:#000}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--alpha-300)}
+.btn-secondary:hover{background:var(--gray-100)}
+.btn-tertiary{background:transparent;color:var(--ink);border-color:transparent}
+.btn-tertiary:hover{background:var(--gray-100)}
+.btn-sm{height:28px;padding:0 8px;font-size:12px}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--blue-700)}
+
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+/* ============ Profile / KV ============ */
+.kv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.kv{background:var(--surface);padding:12px 14px}
+.kv .k{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.kv .v{font-size:13px;color:var(--ink);line-height:18px;font-weight:500}
+
+.callout{
+  border:1px solid var(--line);background:var(--gray-100);
+  border-radius:8px;padding:14px 16px;color:var(--ink);
+  font-size:13px;line-height:20px;
+}
+.callout.accent{
+  background:var(--blue-100);border-color:#cae7ff;color:var(--blue-1000);
+}
+.callout-title{font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.callout-title:before{content:"";width:4px;height:4px;border-radius:50%;background:currentColor}
+
+.facts{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.fact{
+  display:grid;grid-template-columns:100px 1fr;gap:12px;align-items:flex-start;
+  padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;
+}
+.fact:last-child{border-bottom:0}
+.fact b{color:var(--ink-3);font-weight:500;font-size:12px}
+.fact span{color:var(--ink)}
+
+/* ============ Tags ============ */
+.fact span.tag-pri,
+.tag-pri{
+  display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;
+  font-size:11px;font-weight:500;background:var(--ink);color:#fff;
+}
+.fact span.tag-sec,
+.tag-sec{
+  display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;
+  font-size:11px;font-weight:500;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);
+}
+
+/* ============ Textarea / Inputs ============ */
+.input,.textarea{
+  width:100%;border:1px solid var(--alpha-300);border-radius:6px;
+  background:var(--surface);color:var(--ink);padding:10px 12px;
+  font-size:13px;line-height:20px;outline:none;
+  transition:border-color .12s,box-shadow .12s;
+}
+.input{height:36px}
+.input:focus,.textarea:focus{border-color:var(--blue-700);box-shadow:0 0 0 3px rgba(0,107,255,.12)}
+.textarea{min-height:200px;resize:vertical;line-height:1.7;font-size:14px}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+
+/* ============ Reply ============ */
+.reply-layout{display:grid;grid-template-columns:300px 1fr;gap:16px}
+.reply-list{display:flex;flex-direction:column;gap:6px;max-height:520px;overflow-y:auto;padding-right:4px}
+.reply-item{
+  border:1px solid var(--line);background:var(--surface);border-radius:8px;
+  padding:10px 12px;cursor:pointer;text-align:left;
+  transition:border-color .12s,background .12s;
+}
+.reply-item:hover{background:var(--gray-100)}
+.reply-item.active{border-color:var(--ink);background:var(--gray-100)}
+.reply-item b{display:block;font-size:13px;font-weight:500;color:var(--ink)}
+.reply-item span{display:block;font-size:11px;color:var(--ink-3);margin-top:2px}
+.reply-suggestion{
+  border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  padding:14px 16px;margin-bottom:8px;
+}
+.reply-suggestion .label{
+  font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:6px;
+}
+.reply-suggestion p{margin:0;font-size:13.5px;color:var(--ink);line-height:22px}
+
+/* ============ Chat ============ */
+.chat{
+  border:1px solid var(--line);border-radius:8px;background:var(--gray-100);
+  padding:16px;min-height:240px;
+}
+.bubble{max-width:75%;border-radius:12px;padding:10px 14px;margin:8px 0;font-size:13px;line-height:20px}
+.bubble.me{margin-left:auto;background:var(--ink);color:#fff;border-bottom-right-radius:4px}
+.bubble.customer{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:4px}
+
+/* ============ Timeline ============ */
+.timeline{display:flex;flex-direction:column;gap:8px}
+.timeline-item{
+  display:grid;grid-template-columns:12px 1fr auto;gap:12px;align-items:flex-start;
+  padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+}
+.timeline-dot{width:8px;height:8px;border-radius:50%;background:var(--ink);margin-top:6px}
+.timeline-dot.green{background:var(--green-700)}
+.timeline-dot.amber{background:var(--amber-800)}
+.timeline-dot.blue{background:var(--blue-700)}
+.timeline-item b{font-size:13px;color:var(--ink);font-weight:500}
+.timeline-item span{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+.timeline-date{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* ============ Empty / Toast ============ */
+.empty{
+  text-align:center;padding:60px 20px;color:var(--ink-3);
+  border:1px dashed var(--line-3);border-radius:8px;background:var(--surface);
+}
+.empty b{display:block;color:var(--ink);font-size:14px;font-weight:500;margin-bottom:6px}
+
+.toast{
+  position:fixed;right:24px;bottom:24px;
+  background:var(--ink);color:#fff;border-radius:8px;padding:10px 14px;
+  font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .15s,transform .15s;
+  box-shadow:var(--shadow-pop);z-index:50;
+}
+.toast.show{opacity:1;transform:none}
+
+.divider{height:1px;background:var(--line);margin:16px 0}
+
+/* Tighter table header on left */
+th.col-name{padding-left:12px}
+
+/* ============ Booking Calendar ============ */
+.booking-layout{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+.booking-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.booking-head h2{margin:0}
+.legend{display:flex;gap:14px;align-items:center;font-size:11px;color:var(--ink-3)}
+.legend .lg{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
+.lg-open{background:var(--surface)}
+.lg-half{background:#fff6de;border-color:#ffdc73}
+.lg-full{background:#ffeeef;border-color:#ffd7d6}
+.lg-mine{background:#171717;border-color:#171717}
+
+.cal-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.cal{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+.cal th, .cal td{border:1px solid var(--line);padding:0;vertical-align:middle;text-align:center}
+.cal thead th{
+  background:var(--gray-100);color:var(--ink-2);font-weight:500;
+  padding:6px 4px;font-size:11px;text-transform:none;letter-spacing:0;
+  position:sticky;top:0;z-index:1;
+}
+.cal thead th.weekend{background:#fff6de;color:var(--amber-900)}
+.cal .slot-head{
+  background:var(--gray-100);color:var(--ink-3);font-weight:500;
+  font-variant-numeric:tabular-nums;width:56px;
+}
+.cell{
+  height:34px;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--ink-2);
+  transition:background .1s;
+}
+.cell.open{background:var(--surface);color:var(--ink-3)}
+.cell.open:hover{background:#f0f7ff;color:var(--blue-700)}
+.cell.half{background:#fff6de;color:var(--amber-900)}
+.cell.half:hover{background:#fff1c1}
+.cell.full{background:#ffeeef;color:var(--red-800);cursor:not-allowed}
+.cell.mine{background:var(--ink);color:#fff;font-weight:500}
+.cell.mine:after{content:""}
+.cell-cnt{font-variant-numeric:tabular-nums;font-size:10px;opacity:.65;margin-left:3px}
+
+.tooltip{
+  position:fixed;background:var(--ink);color:#fff;border-radius:6px;
+  padding:6px 10px;font-size:11px;line-height:1.5;pointer-events:none;
+  box-shadow:var(--shadow-pop);z-index:60;opacity:0;transition:opacity .1s;
+  max-width:260px;
+}
+.tooltip.show{opacity:1}
+.tooltip b{display:block;color:#fff;font-weight:500;margin-bottom:2px}
+.tooltip .ti{color:#a8a8a8;font-size:10px;margin-top:4px;display:block}
+
+@media(max-width:1100px){.booking-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark">老</div>
+      <div class="brand-title">老客服务<small>Retention · v0.3</small></div>
+    </div>
+    <div class="store-switch">
+      <label>门店</label>
+      <select class="store-select" id="storeSelect">
+        <option value="ALL">全部门店</option>
+        <option value="红日门店">红日门店</option>
+        <option value="大直街店">大直街店</option>
+        <option value="万达广场店">万达广场店</option>
+      </select>
+    </div>
+    <nav class="nav">
+      <button class="active" data-view="tasks"><span class="nav-num">01</span>本周清单</button>
+      <button data-view="customer"><span class="nav-num">02</span>客户详情</button>
+      <button data-view="message"><span class="nav-num">03</span>首次话术</button>
+      <button data-view="follow"><span class="nav-num">04</span>二次推进</button>
+      <button data-view="booking"><span class="nav-num">05</span>预约到店</button>
+      <button data-view="result"><span class="nav-num">06</span>结果回写</button>
+    </nav>
+    <div class="side-foot">服务型触达，不群发营销。<br>规则筛选 → 一人一稿 → 导购确认后发送。</div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1 id="pageTitle">本周清单</h1>
+        <div class="top-sub" id="pageSub"></div>
+      </div>
+      <div class="top-right">
+        <span class="top-date"><span class="dot"></span>2026-06-30 · 第 27 周</span>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="step active" data-step="tasks"><span class="step-num">01</span><b>本周清单</b></div>
+      <div class="step" data-step="customer"><span class="step-num">02</span><b>客户详情</b></div>
+      <div class="step" data-step="message"><span class="step-num">03</span><b>首次话术</b></div>
+      <div class="step" data-step="follow"><span class="step-num">04</span><b>二次推进</b></div>
+      <div class="step" data-step="booking"><span class="step-num">05</span><b>预约到店</b></div>
+      <div class="step" data-step="result"><span class="step-num">06</span><b>结果回写</b></div>
+    </div>
+
+    <!-- 01 Tasks -->
+    <section id="tasks" class="view active">
+      <div class="stats" id="statsBar"></div>
+      <div class="card">
+        <h2>本周该联系谁</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th class="col-name">客户</th>
+              <th>门店</th>
+              <th>沉默天数</th>
+              <th>主标签</th>
+              <th>触发原因</th>
+              <th>优先级</th>
+              <th>建议动作</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="taskRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Customer -->
+    <section id="customer" class="view">
+      <div class="layout-2">
+        <div class="card">
+          <h2 id="custHeadName">客户档案</h2>
+          <div class="kv-grid" id="custKv"></div>
+          <div class="facts" id="custFacts"></div>
+          <div class="actions">
+            <button class="btn btn-primary" data-go="message">生成首次话术</button>
+            <button class="btn btn-secondary" data-go="tasks">返回清单</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>AI 判断</h2>
+          <div class="callout accent">
+            <div class="callout-title">为什么本周联系</div>
+            <div id="aiReason"></div>
+          </div>
+          <div class="callout" style="margin-top:12px">
+            <div class="callout-title">触达建议</div>
+            <div id="aiSuggest"></div>
+          </div>
+          <div class="divider"></div>
+          <h3>标签解读</h3>
+          <div class="facts">
+            <div class="fact"><b>主标签</b><span><span class="tag-pri" id="tagPri"></span></span></div>
+            <div class="fact"><b>副标签</b><span><span class="tag-sec" id="tagSec"></span></span></div>
+            <div class="fact"><b>用法</b><span id="tagUsage">主标签决定话术模板，副标签作为关怀补充。</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Message -->
+    <section id="message" class="view">
+      <div class="layout-2">
+        <div class="card">
+          <h2>首次关怀话术</h2>
+          <textarea class="textarea" id="firstMessage"></textarea>
+          <div class="actions">
+            <button class="btn btn-secondary btn-sm" data-rewrite="professional">更专业</button>
+            <button class="btn btn-secondary btn-sm" data-rewrite="friendly">更亲切</button>
+            <button class="btn btn-secondary btn-sm" data-rewrite="short">缩短</button>
+            <button class="btn btn-secondary btn-sm" data-rewrite="weekend">加周末时间</button>
+            <button class="btn btn-primary" id="sendMessage">确认发送</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>话术依据</h2>
+          <div class="kv-grid" id="msgBasis"></div>
+          <div class="divider"></div>
+          <h3>表达红线</h3>
+          <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--ink-2);line-height:1.8">
+            <li>不承诺度数稳定 / 视力恢复效果</li>
+            <li>不一上来就推换镜</li>
+            <li>服务理由优先（复查 / 调校 / 清洗）</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Follow -->
+    <section id="follow" class="view">
+      <div class="reply-layout">
+        <div class="card">
+          <h2>客户回复</h2>
+          <div class="reply-list" id="replyTabs"></div>
+        </div>
+        <div class="card">
+          <h2>AI 二次推进</h2>
+          <div id="replySuggestions"></div>
+          <div class="actions">
+            <button class="btn btn-secondary" id="copySuggestion">复制此话术</button>
+            <button class="btn btn-primary" data-go="booking">客户同意，去预约</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Booking -->
+    <section id="booking" class="view">
+      <div class="booking-layout">
+        <div class="card">
+          <div class="booking-head">
+            <h2 id="bookingTitle">本门店预约日历</h2>
+            <div class="legend">
+              <span class="lg lg-open"></span>空档
+              <span class="lg lg-half"></span>半档
+              <span class="lg lg-full"></span>满档
+              <span class="lg lg-mine"></span>本次预约
+            </div>
+          </div>
+          <div class="cal-wrap" id="calendar"></div>
+        </div>
+
+        <div class="card">
+          <h2>新预约</h2>
+          <div class="field-row">
+            <div class="field"><label>客户</label><input class="input" id="bookCustomer" readonly></div>
+            <div class="field"><label>门店</label><input class="input" id="bookStore" readonly></div>
+            <div class="field"><label>日期</label><input class="input" id="bookDate" placeholder="点左侧日历选择"></div>
+            <div class="field"><label>时间</label><input class="input" id="bookSlot" placeholder="点左侧日历选择"></div>
+            <div class="field"><label>服务项目</label><input class="input" id="bookingService"></div>
+            <div class="field"><label>接待验光师</label><select class="input" id="bookStaff"></select></div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="confirmBooking">确认预约</button>
+            <button class="btn btn-secondary" id="markArrived" disabled>标记已到店</button>
+          </div>
+          <div class="divider"></div>
+          <h3>到店前一天提醒</h3>
+          <div class="chat" id="bookingChat"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Result -->
+    <section id="result" class="view">
+      <div class="layout-2">
+        <div class="card">
+          <h2>服务结果回写</h2>
+          <div class="kv-grid" id="resultKv"></div>
+          <div class="actions">
+            <button class="btn btn-primary" data-go="tasks">完成，回到清单</button>
+          </div>
+        </div>
+        <div class="card">
+          <h2>下一次任务</h2>
+          <div class="timeline" id="nextTasks"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast">已完成</div>
+
+<script>
+// ======================== Data ========================
+const CUSTOMERS = [{"门店": "红日门店", "客户编号": "A001", "姓名": "张晓丽", "性别": "女", "年龄": 40, "电话": "18181880488", "微信": "zl1818188", "戴镜历史": "长期佩戴单光镜，旧镜使用3年", "眼健康": "无眼病，偶发眼干", "视觉需求": "户外销售，每日手机电脑4小时，日常驾车", "品牌意向": "国产镜片", "学生防控": "非学生", "屈光度": "R-4.50 L-4.50，无散光，PD62，ADD+0.75", "视功能": "主导眼右眼，轻度调节滞后", "视疲劳": "偶尔眼干、近距离易犯困", "建议方案": "国产非球面防蓝光框架镜，每3个月复查", "家庭视力": "爱人轻度近视300度，子女视力正常", "特殊情况": "无金属过敏", "末次到店": "2026-03-28", "历史到店次数": 3, "上次配镜": "2023-06-15", "配镜明细": "TR金属架+1.60国产防蓝光镜片", "客单价区间": "500-800", "会员等级": "普通会员", "售后记录": "每年免费清洗调框，更换鼻托2次", "主标签": "框架年限", "副标签": "家庭关怀"}, {"门店": "红日门店", "客户编号": "A002", "姓名": "王浩宇", "性别": "男", "年龄": 16, "电话": "13956221077", "微信": "wanghy16", "戴镜历史": "初配眼镜，从未戴镜", "眼健康": "无眼病，用眼易酸胀", "视觉需求": "高二学生，每日网课+书本10小时", "品牌意向": "凯米", "学生防控": "坐姿差，户外活动不足1小时，电子产品重度使用", "屈光度": "R-3.75 L-4.00，轻度散光", "视功能": "调节超前，轻度外隐斜", "视疲劳": "频繁眼酸、看书串行", "建议方案": "国产青少年防控离焦镜片，每半年复查", "家庭视力": "父母均高度近视600度", "特殊情况": "无过敏", "末次到店": "2026-06-20", "历史到店次数": 1, "上次配镜": "2026-06-20", "配镜明细": "板材学生架+国产离焦防控片", "客单价区间": "800-1200", "会员等级": "银卡会员", "售后记录": "刚配镜，预约1个月后视力复查", "主标签": "青少年防控周期", "副标签": "家庭关怀"}, {"门店": "红日门店", "客户编号": "A003", "姓名": "李桂兰", "性别": "女", "年龄": 62, "电话": "13678994512", "微信": "13678994512", "戴镜历史": "老花镜佩戴5年，单光老花", "眼健康": "轻度干眼，无眼底病", "视觉需求": "居家买菜、看手机，看书读报", "品牌意向": "依视路", "学生防控": "非学生", "屈光度": "远用平光，ADD+2.25，老花", "视功能": "融像功能偏弱", "视疲劳": "频繁视物模糊、看近久头疼", "建议方案": "渐进多焦点老花镜，半年复查", "家庭视力": "老伴老花300度", "特殊情况": "板材镜框过敏", "末次到店": "2026-05-12", "历史到店次数": 4, "上次配镜": "2021-04-30", "配镜明细": "纯钛轻框+依视路渐进镜片", "客单价区间": "1500-2000", "会员等级": "金卡会员", "售后记录": "镜框断裂维修1次，每年定期验光", "主标签": "渐进调整", "副标签": "家庭关怀"}, {"门店": "红日门店", "客户编号": "A004", "姓名": "陈俊", "性别": "男", "年龄": 28, "电话": "13266559871", "微信": "chenjun987", "戴镜历史": "一直佩戴，2年更换一副", "眼健康": "轻度干眼症，无眼病", "视觉需求": "办公室设计，长期电脑绘图", "品牌意向": "蔡司", "学生防控": "非学生", "屈光度": "R-2.25 L-2.00", "视功能": "视功能全部正常", "视疲劳": "偶尔眼干，长时间绘图模糊", "建议方案": "蔡司超薄防蓝光单光镜，年度复查", "家庭视力": "家人视力全部正常", "特殊情况": "无特殊过敏", "末次到店": "2026-06-10", "历史到店次数": 2, "上次配镜": "2024-05-08", "配镜明细": "商务纯钛架+蔡司1.67防蓝光", "客单价区间": "2000-3000", "会员等级": "钻石VIP", "售后记录": "免费抛光镜架，更换防滑耳勾", "主标签": "办公室人员", "副标签": "损坏维修"}, {"门店": "红日门店", "客户编号": "A005", "姓名": "刘一诺", "性别": "女", "年龄": 9, "电话": "13899662310", "微信": "momliuyinuo", "戴镜历史": "初配防控镜，佩戴1年", "眼健康": "无眼病，易视疲劳", "视觉需求": "小学三年级，网课+课外书", "品牌意向": "国产防控片", "学生防控": "坐姿差，每日户外2小时，爱吃甜食", "屈光度": "R-1.50 L-1.75", "视功能": "调节不足，轻度内隐斜", "视疲劳": "经常揉眼、看书走神", "建议方案": "儿童离焦防控镜片，3个月复查", "家庭视力": "母亲高度近视800度", "特殊情况": "对镍金属过敏", "末次到店": "2026-06-25", "历史到店次数": 2, "上次配镜": "2025-06-22", "配镜明细": "硅胶软儿童架+国产防控镜片", "客单价区间": "700-1000", "会员等级": "银卡会员", "售后记录": "镜腿松动调整3次，更换防滑鼻托", "主标签": "青少年防控周期", "副标签": "损坏维修"}, {"门店": "红日门店", "客户编号": "A006", "姓名": "周明远", "性别": "男", "年龄": 50, "电话": "13522447789", "微信": "zhoumy7789", "戴镜历史": "单光近视镜佩戴4年，老花初现", "眼健康": "轻微眼压偏高，定期监测", "视觉需求": "工地管理，户外强光，夜间看图纸", "品牌意向": "豪雅", "学生防控": "非学生", "屈光度": "R-3.00 L-2.75 ADD+1.00", "视功能": "主导眼左眼，调节滞后", "视疲劳": "频繁畏光、远近切换对焦慢", "建议方案": "变色渐进眼镜，半年复查", "家庭视力": "妻子老花450度", "特殊情况": "无过敏", "末次到店": "2026-04-18", "历史到店次数": 3, "上次配镜": "2022-03-11", "配镜明细": "全框TR90+豪雅变色渐进", "客单价区间": "1200-1800", "会员等级": "金卡会员", "售后记录": "户外镜架多次调紧，镜片划痕抛光", "主标签": "渐进调整", "副标签": "家庭关怀"}, {"门店": "红日门店", "客户编号": "A007", "姓名": "吴佳琪", "性别": "女", "年龄": 24, "电话": "13155886620", "微信": "wujiaqi66", "戴镜历史": "偶尔戴眼镜，日常隐形为主", "眼健康": "轻度结膜敏感，不能长期戴隐形", "视觉需求": "新媒体运营，手机直播全天", "品牌意向": "凯米", "学生防控": "非学生", "屈光度": "R-1.75 L-1.50", "视功能": "视功能正常", "视疲劳": "长时间戴隐形眼涩", "建议方案": "备用框架防蓝光镜，季度复查", "家庭视力": "家人视力正常", "特殊情况": "敏感角膜，拒绝劣质隐形", "末次到店": "2026-06-02", "历史到店次数": 2, "上次配镜": "2025-10-05", "配镜明细": "网红细框+凯米防蓝光", "客单价区间": "400-700", "会员等级": "普通会员", "售后记录": "隐形护理咨询，框架免费清洗", "主标签": "隐形用量", "副标签": "商务形象"}, {"门店": "红日门店", "客户编号": "A008", "姓名": "孙建国", "性别": "男", "年龄": 70, "电话": "13744113690", "微信": "无微信", "戴镜历史": "老式单光老花镜，镜片磨损严重", "眼健康": "轻度白内障早期，遵医嘱复查", "视觉需求": "居家看电视、看报纸", "品牌意向": "国产", "学生防控": "非学生", "屈光度": "远用平光 ADD+2.75", "视功能": "融像差，双眼平衡弱", "视疲劳": "持续看近头晕、视物发暗", "建议方案": "大视野单光老花，3个月复查", "家庭视力": "老伴高度老花，子女近视", "特殊情况": "手部震颤，镜框需防滑", "末次到店": "2026-05-30", "历史到店次数": 5, "上次配镜": "2020-06-18", "配镜明细": "加宽轻量塑料老花架+国产高清镜片", "客单价区间": "300-500", "会员等级": "普通会员", "售后记录": "多次镜架维修，免费更换防滑套", "主标签": "损坏维修", "副标签": "框架年限"}, {"门店": "红日门店", "客户编号": "A009", "姓名": "郑欣怡", "性别": "女", "年龄": 14, "电话": "13988772256", "微信": "zhengxin14", "戴镜历史": "佩戴防控眼镜2年", "眼健康": "无眼部疾病，课间少远眺", "视觉需求": "初中走读，作业量大，短视频频繁", "品牌意向": "依视路星趣控", "学生防控": "挑食，户外活动1小时", "屈光度": "R-4.25 L-4.00，散光-0.50", "视功能": "调节滞后，外隐斜", "视疲劳": "频繁眼酸、上课走神", "建议方案": "依视路离焦防控镜片，3个月复查", "家庭视力": "父母双方近视500度", "特殊情况": "无过敏", "末次到店": "2026-04-15", "历史到店次数": 3, "上次配镜": "2024-06-10", "配镜明细": "耐磨TR学生架+星趣控镜片", "客单价区间": "1800-2500", "会员等级": "钻石VIP", "售后记录": "定期视力监测，免费更换鼻托", "主标签": "青少年防控周期", "副标签": "损坏维修"}, {"门店": "红日门店", "客户编号": "A010", "姓名": "马强", "性别": "男", "年龄": 33, "电话": "13477991163", "微信": "maqiang1163", "戴镜历史": "常年佩戴，一年一换镜片", "眼健康": "长期户外，强光易眼涩", "视觉需求": "货运司机，长途开车，手机导航", "品牌意向": "国产变色片", "学生防控": "非学生", "屈光度": "R-3.50 L-3.25", "视功能": "视功能正常，主导眼右眼", "视疲劳": "户外强光眼胀，夜间视物疲劳", "建议方案": "国产变色防紫外线单光镜，年度复查", "家庭视力": "妻子轻度近视200度", "特殊情况": "出汗多，镜架易滑", "末次到店": "2026-06-22", "历史到店次数": 4, "上次配镜": "2023-05-20", "配镜明细": "加粗防滑运动架+变色镜片", "客单价区间": "600-900", "会员等级": "银卡会员", "售后记录": "镜腿防滑加固，镜片划痕修复", "主标签": "开车框架年限", "副标签": "损坏维修"}, {"门店": "大直街店", "客户编号": "B001", "姓名": "何文静", "性别": "女", "年龄": 36, "电话": "13622550078", "微信": "hewen0078", "戴镜历史": "长期单光镜，佩戴2年", "眼健康": "中度干眼，经常熬夜", "视觉需求": "财务会计，全天电脑对账", "品牌意向": "蔡司", "学生防控": "非学生", "屈光度": "R-2.00 L-2.25", "视功能": "调节超前，轻微内隐斜", "视疲劳": "频繁眼干、记账头疼", "建议方案": "蔡司1.60防蓝光镜框，半年复查", "家庭视力": "孩子10岁轻度近视", "特殊情况": "金属鼻托易过敏", "末次到店": "2026-06-21", "历史到店次数": 2, "上次配镜": "2024-07-12", "配镜明细": "板材无镍架+蔡司防蓝光", "客单价区间": "1300-1900", "会员等级": "金卡会员", "售后记录": "免费更换硅胶鼻托，镜框整形", "主标签": "办公室人员", "副标签": "家庭关怀"}, {"门店": "大直街店", "客户编号": "B002", "姓名": "赵梓轩", "性别": "男", "年龄": 12, "电话": "13855449910", "微信": "zhaozixuan12", "戴镜历史": "初配眼镜，佩戴半年", "眼健康": "无眼病，近距离用眼疲劳", "视觉需求": "小学六年级，补习班多", "品牌意向": "凯米防控片", "学生防控": "挑食，户外活动不足1小时", "屈光度": "R-2.50 L-2.75，散光-0.75", "视功能": "调节不足，外隐斜", "视疲劳": "看书串行、揉眼频繁", "建议方案": "青少年离焦镜片，3个月复查", "家庭视力": "父亲高度近视700度", "特殊情况": "无过敏", "末次到店": "2026-06-18", "历史到店次数": 2, "上次配镜": "2025-12-10", "配镜明细": "柔韧儿童架+凯米防控片", "客单价区间": "750-1100", "会员等级": "银卡会员", "售后记录": "镜腿摔弯免费矫正，视力跟踪记录", "主标签": "青少年防控周期", "副标签": "损坏维修"}, {"门店": "大直街店", "客户编号": "B003", "姓名": "方秀莲", "性别": "女", "年龄": 58, "电话": "13588664432", "微信": "fang4432", "戴镜历史": "老花镜3年，看远看近切换困难", "眼健康": "轻度玻璃体混浊", "视觉需求": "广场舞、看书、看电视", "品牌意向": "国产渐进", "学生防控": "非学生", "屈光度": "远用R-1.00 L-0.75 ADD+1.75", "视功能": "融像能力下降", "视疲劳": "上下楼梯视物模糊，看书头晕", "建议方案": "国产入门渐进镜片，半年复查", "家庭视力": "老伴老花500度", "特殊情况": "怕重镜框，只选轻款", "末次到店": "2026-05-26", "历史到店次数": 3, "上次配镜": "2023-04-05", "配镜明细": "超轻TR90全框+国产渐进", "客单价区间": "800-1300", "会员等级": "普通会员", "售后记录": "镜框螺丝松动多次紧固", "主标签": "渐进调整", "副标签": "家庭关怀"}, {"门店": "大直街店", "客户编号": "B004", "姓名": "黄泽宇", "性别": "男", "年龄": 26, "电话": "13299775541", "微信": "huangze5541", "戴镜历史": "交替佩戴框架+月抛隐形", "眼健康": "角膜偏敏感，不能长时间戴隐形", "视觉需求": "短视频剪辑，长期屏幕", "品牌意向": "依视路", "学生防控": "非学生", "屈光度": "R-4.00 L-3.75，散光-0.50", "视功能": "视功能正常", "视疲劳": "连续工作4小时眼涩酸胀", "建议方案": "依视路超薄防蓝光备用镜，季度复查", "家庭视力": "家人视力正常", "特殊情况": "熬夜多，眼压偶尔偏高", "末次到店": "2026-04-08", "历史到店次数": 3, "上次配镜": "2024-09-22", "配镜明细": "简约商务框+依视路1.67镜片", "客单价区间": "1600-2200", "会员等级": "钻石VIP", "售后记录": "隐形选购咨询，镜框免费抛光", "主标签": "商务形象", "副标签": "隐形用量"}, {"门店": "大直街店", "客户编号": "B005", "姓名": "苏小雨", "性别": "女", "年龄": 17, "电话": "13966337715", "微信": "suxiaoyu17", "戴镜历史": "防控镜佩戴3年，度数小幅增长", "眼健康": "无眼病，熬夜刷题", "视觉需求": "高三学生，每日学习12小时", "品牌意向": "国产防控片", "学生防控": "坐姿差，周末玩手机8小时", "屈光度": "R-5.00 L-4.75", "视功能": "调节滞后明显，外隐斜", "视疲劳": "经常眼痛、注意力差", "建议方案": "升级高离焦防控镜片，2个月复查", "家庭视力": "父母均高度近视", "特殊情况": "无过敏", "末次到店": "2026-04-24", "历史到店次数": 4, "上次配镜": "2023-06-30", "配镜明细": "加厚耐磨学生架+国产高离焦片", "客单价区间": "900-1400", "会员等级": "银卡会员", "售后记录": "每年寒暑假复查视力，更换磨损镜片", "主标签": "框架年限", "副标签": "损坏维修"}, {"门店": "大直街店", "客户编号": "B006", "姓名": "顾建军", "性别": "男", "年龄": 45, "电话": "13722889901", "微信": "gu9901", "戴镜历史": "单光镜4年，初发老花", "眼健康": "轻度干眼症，户外作业", "视觉需求": "装修工人，强光粉尘环境", "品牌意向": "豪雅变色", "学生防控": "非学生", "屈光度": "R-2.75 L-3.00 ADD+0.50", "视功能": "主导眼左眼，调节偏弱", "视疲劳": "户外畏光，傍晚视物模糊", "建议方案": "豪雅变色单光镜，年度复查", "家庭视力": "女儿轻度近视300度", "特殊情况": "粉尘易磨损镜片", "末次到店": "2026-04-22", "历史到店次数": 3, "上次配镜": "2022-05-16", "配镜明细": "加固运动框+豪雅变色镜片", "客单价区间": "1100-1700", "会员等级": "金卡会员", "售后记录": "镜片划痕抛光，镜架加固焊接", "主标签": "48岁以上近视", "副标签": "家庭关怀"}, {"门店": "大直街店", "客户编号": "B007", "姓名": "温萌萌", "性别": "女", "年龄": 22, "电话": "13188553369", "微信": "wenmm3369", "戴镜历史": "偶尔戴框架，日常日抛隐形", "眼健康": "眼表敏感，换季易红痒", "视觉需求": "服装导购，长时间看手机", "品牌意向": "凯米", "学生防控": "非学生", "屈光度": "R-1.25 L-1.00", "视功能": "视功能正常", "视疲劳": "长时间戴隐形干涩", "建议方案": "轻便备用防蓝光框架，半年复查", "家庭视力": "家人视力正常", "特殊情况": "换季不能戴隐形", "末次到店": "2026-06-05", "历史到店次数": 2, "上次配镜": "2025-11-08", "配镜明细": "网红细框+凯米防蓝光镜片", "客单价区间": "350-650", "会员等级": "普通会员", "售后记录": "隐形佩戴指导，镜框清洗保养", "主标签": "隐形用量", "副标签": "框架年限"}, {"门店": "大直街店", "客户编号": "B008", "姓名": "崔永福", "性别": "男", "年龄": 65, "电话": "13655778821", "微信": "13655778821", "戴镜历史": "老式单光老花，视物模糊", "眼健康": "轻度眼底老化，定期体检", "视觉需求": "下棋、看报纸、看电视", "品牌意向": "国产高清老花", "学生防控": "非学生", "屈光度": "远用平光 ADD+2.50", "视功能": "双眼平衡差，融像不足", "视疲劳": "长时间阅读头晕、字体发虚", "建议方案": "宽视野高清老花镜，半年复查", "家庭视力": "老伴高度老花，孙子近视", "特殊情况": "行动缓慢，镜框易滑落", "末次到店": "2026-05-18", "历史到店次数": 4, "上次配镜": "2021-03-22", "配镜明细": "加宽防滑老花架+国产高清片", "客单价区间": "280-480", "会员等级": "普通会员", "售后记录": "多次更换防滑耳勾、鼻托", "主标签": "框架年限", "副标签": "家庭关怀"}, {"门店": "大直街店", "客户编号": "B009", "姓名": "唐欣", "性别": "女", "年龄": 11, "电话": "13877446692", "微信": "tangxin11", "戴镜历史": "初配防控镜，佩戴10个月", "眼健康": "无眼病，写作业凑太近", "视觉需求": "五年级，平板上网课", "品牌意向": "依视路星趣控", "学生防控": "不爱户外活动，甜食过量", "屈光度": "R-1.25 L-1.50，散光-0.25", "视功能": "调节不足，轻度内隐斜", "视疲劳": "经常揉眼、看书串行", "建议方案": "星趣控离焦防控镜片，3个月复查", "家庭视力": "母亲高度近视650度", "特殊情况": "对塑料镜框轻微过敏", "末次到店": "2026-06-12", "历史到店次数": 2, "上次配镜": "2025-08-15", "配镜明细": "软硅胶儿童架+星趣控镜片", "客单价区间": "1700-2400", "会员等级": "钻石VIP", "售后记录": "定期视力建档，免费调整镜架", "主标签": "青少年防控周期", "副标签": "损坏维修"}, {"门店": "大直街店", "客户编号": "B010", "姓名": "江涛", "性别": "男", "年龄": 38, "电话": "13422667730", "微信": "jiangtao7730", "戴镜历史": "常年佩戴，2年更换一副", "眼健康": "长期开车强光刺激眼干", "视觉需求": "物流调度，全天电脑+夜间驾车", "品牌意向": "国产变色防蓝光", "学生防控": "非学生", "屈光度": "R-3.25 L-3.50，散光-0.50", "视功能": "视功能全部正常", "视疲劳": "夜间开车眩光、眼胀", "建议方案": "国产变色防蓝光单光镜，年度复查", "家庭视力": "儿子小学轻度近视", "特殊情况": "出汗多镜架易下滑", "末次到店": "2026-06-19", "历史到店次数": 3, "上次配镜": "2024-06-07", "配镜明细": "防滑运动商务架+变色镜片", "客单价区间": "550-850", "会员等级": "银卡会员", "售后记录": "镜腿防滑加固，镜片清洗保养", "主标签": "开车框架年限", "副标签": "家庭关怀"}, {"门店": "万达广场店", "客户编号": "C001", "姓名": "许若涵", "性别": "女", "年龄": 32, "电话": "13922551147", "微信": "xuruohan11", "戴镜历史": "长期单光镜，佩戴1.5年", "眼健康": "中度干眼，长期加班", "视觉需求": "新媒体策划，全天电脑手机", "品牌意向": "蔡司", "学生防控": "非学生", "屈光度": "R-1.75 L-2.00", "视功能": "调节滞后，轻微外隐斜", "视疲劳": "长时间办公眼干头疼", "建议方案": "蔡司超薄防蓝光镜框，半年复查", "家庭视力": "孩子8岁视力正常", "特殊情况": "镍金属过敏，只选无镍架", "末次到店": "2026-06-23", "历史到店次数": 2, "上次配镜": "2024-12-05", "配镜明细": "纯钛无镍架+蔡司1.60镜片", "客单价区间": "1400-2000", "会员等级": "金卡会员", "售后记录": "免费更换硅胶鼻托，镜框整形抛光", "主标签": "办公室人员", "副标签": "家庭关怀"}, {"门店": "万达广场店", "客户编号": "C002", "姓名": "董子航", "性别": "男", "年龄": 15, "电话": "13688442291", "微信": "dongzih15", "戴镜历史": "防控镜佩戴2年，度数稳定", "眼健康": "无眼部疾病，刷题疲劳", "视觉需求": "高一住校，晚自习时间长", "品牌意向": "凯米U2防控片", "学生防控": "户外活动少，手机熬夜", "屈光度": "R-3.25 L-3.00，散光-0.75", "视功能": "调节不足，外隐斜", "视疲劳": "看书串行、上课犯困", "建议方案": "凯米青少年离焦镜片，3个月复查", "家庭视力": "父母均近视500度", "特殊情况": "无过敏", "末次到店": "2026-06-16", "历史到店次数": 3, "上次配镜": "2024-06-21", "配镜明细": "耐磨TR学生架+凯米防控片", "客单价区间": "800-1200", "会员等级": "银卡会员", "售后记录": "寒暑假视力复查，镜架多次矫正", "主标签": "青少年防控周期", "副标签": "家庭关怀"}, {"门店": "万达广场店", "客户编号": "C003", "姓名": "秦桂珍", "性别": "女", "年龄": 60, "电话": "13577336610", "微信": "qin6610", "戴镜历史": "老花镜3年，远近切换困难", "眼健康": "轻度干眼，畏光", "视觉需求": "超市采购、看书追剧", "品牌意向": "国产渐进镜片", "学生防控": "非学生", "屈光度": "远用R-0.75 L-1.00 ADD+2.00", "视功能": "融像功能偏弱", "视疲劳": "上下楼视物变形，看书久头晕", "建议方案": "国产入门渐进镜，半年复查", "家庭视力": "老伴老花400度", "特殊情况": "偏好超轻镜框", "末次到店": "2026-04-22", "历史到店次数": 3, "上次配镜": "2023-05-10", "配镜明细": "超轻TR全框+国产渐进", "客单价区间": "780-1250", "会员等级": "普通会员", "售后记录": "镜框螺丝紧固，鼻托定期更换", "主标签": "45-70岁以上办公室人员", "副标签": "框架年限"}, {"门店": "万达广场店", "客户编号": "C004", "姓名": "陆泽", "性别": "男", "年龄": 29, "电话": "13255998864", "微信": "luze8864", "戴镜历史": "框架+月抛隐形交替佩戴", "眼健康": "角膜敏感，不能连续戴隐形8小时", "视觉需求": "室内设计师，手绘+电脑绘图", "品牌意向": "依视路", "学生防控": "非学生", "屈光度": "R-4.25 L-4.50，散光-0.75", "视功能": "视功能正常", "视疲劳": "绘图超过5小时眼酸模糊", "建议方案": "依视路1.67超薄防蓝光镜，季度复查", "家庭视力": "家人视力全部正常", "特殊情况": "熬夜工作眼压偏高", "末次到店": "2026-06-09", "历史到店次数": 3, "上次配镜": "2024-08-30", "配镜明细": "轻奢商务纯钛架+依视路镜片", "客单价区间": "1800-2600", "会员等级": "钻石VIP", "售后记录": "隐形产品咨询，镜框免费抛光维修", "主标签": "办公室人员", "副标签": "损坏维修"}, {"门店": "万达广场店", "客户编号": "C005", "姓名": "夏琳", "性别": "女", "年龄": 18, "电话": "13822664479", "微信": "xialin18", "戴镜历史": "初配眼镜，高中艺考", "眼健康": "无眼病，长时间画画看画板", "视觉需求": "美术生，长时间近距离绘画", "品牌意向": "国产防蓝光片", "学生防控": "坐姿差，电子产品日常使用", "屈光度": "R-2.00 L-2.25，散光-0.50", "视功能": "调节滞后，轻度内隐斜", "视疲劳": "画画久眼酸、视物发花", "建议方案": "国产高清防蓝光单光镜，半年复查", "家庭视力": "母亲轻度近视300度", "特殊情况": "无过敏", "末次到店": "2026-06-20", "历史到店次数": 1, "上次配镜": "2026-06-20", "配镜明细": "简约文艺板材架+国产镜片", "客单价区间": "450-750", "会员等级": "普通会员", "售后记录": "刚配镜，预约1个月复查视力", "主标签": "办公室人员", "副标签": "家庭关怀"}, {"门店": "万达广场店", "客户编号": "C006", "姓名": "高峰", "性别": "男", "年龄": 48, "电话": "13799225583", "微信": "gaofeng5583", "戴镜历史": "单光镜5年，老花加重", "眼健康": "户外工地强光，轻度干眼", "视觉需求": "工程监理，户外巡查+室内图纸", "品牌意向": "豪雅变色渐进", "学生防控": "非学生", "屈光度": "R-3.50 L-3.25 ADD+1.00", "视功能": "主导眼右眼，调节偏弱", "视疲劳": "户外眩光，看图纸对焦慢", "建议方案": "豪雅变色渐进镜片，年度复查", "家庭视力": "女儿大学近视450度", "特殊情况": "粉尘易磨损镜片", "末次到店": "2026-04-30", "历史到店次数": 4, "上次配镜": "2021-06-14", "配镜明细": "加固加宽运动框+豪雅渐进", "客单价区间": "1300-1900", "会员等级": "金卡会员", "售后记录": "镜片划痕修复，镜架焊接加固", "主标签": "渐进调整", "副标签": "家庭关怀"}, {"门店": "万达广场店", "客户编号": "C007", "姓名": "林小冉", "性别": "女", "年龄": 21, "电话": "13166449952", "微信": "linxr9952", "戴镜历史": "日常日抛隐形，备用框架", "眼健康": "换季眼痒，角膜偏薄", "视觉需求": "奶茶店员，全天手机接单", "品牌意向": "凯米防蓝光", "学生防控": "非学生", "屈光度": "R-1.00 L-0.75", "视功能": "视功能正常", "视疲劳": "长时间戴隐形干涩泛红", "建议方案": "轻便网红框架备用镜，半年复查", "家庭视力": "家人视力正常", "特殊情况": "换季停用隐形", "末次到店": "2026-06-04", "历史到店次数": 2, "上次配镜": "2025-10-28", "配镜明细": "细框TR90+凯米防蓝光镜片", "客单价区间": "320-620", "会员等级": "普通会员", "售后记录": "隐形佩戴护理教学，镜框免费清洗", "主标签": "隐形用量", "副标签": "框架年限"}, {"门店": "万达广场店", "客户编号": "C008", "姓名": "程浩", "性别": "男", "年龄": 68, "电话": "13699557741", "微信": "13699557741", "戴镜历史": "老式老花镜，镜片发黄磨损", "眼健康": "轻度白内障前期，定期眼科复查", "视觉需求": "垂钓、看报纸、看电视", "品牌意向": "国产高清老花", "学生防控": "非学生", "屈光度": "远用平光 ADD+2.80", "视功能": "双眼平衡差，融像不足", "视疲劳": "长时间阅读头晕、视物昏暗", "建议方案": "大视野高清老花镜，3个月复查", "家庭视力": "老伴高度老花，孙子近视", "特殊情况": "手部抖动，镜框易滑落", "末次到店": "2026-05-15", "历史到店次数": 5, "上次配镜": "2020-04-10", "配镜明细": "加宽防滑老花架+国产高清片", "客单价区间": "260-460", "会员等级": "普通会员", "售后记录": "常年免费更换防滑耳勾、紧固螺丝", "主标签": "框架年限", "副标签": "家庭关怀"}];
+
+// today fixed at 2026-06-30 for the demo
+const TODAY = new Date('2026-06-30');
+const REST_WINDOW = 45; // 末次到店 ≤ 45 天则避让
+
+// ============ 预约日历 ============
+// 8 天窗口（本周二 7/01 -- 下周二 7/07，跨越本周末和下周）
+// 时间槽：9:00、9:30、10:00、10:30、11:00、14:00、14:30、15:00、15:30、16:00、16:30、17:00（共 12 槽）
+// 每家门店同一时段允许 2 个并发预约（两位验光师）
+const CAPACITY = 2;
+const SLOTS = ['09:00','09:30','10:00','10:30','11:00','14:00','14:30','15:00','15:30','16:00','16:30','17:00'];
+const DAYS = [
+  {date:'2026-07-01', label:'7/01 周三', isWeekend:false},
+  {date:'2026-07-02', label:'7/02 周四', isWeekend:false},
+  {date:'2026-07-03', label:'7/03 周五', isWeekend:false},
+  {date:'2026-07-04', label:'7/04 周六', isWeekend:true},
+  {date:'2026-07-05', label:'7/05 周日', isWeekend:true},
+  {date:'2026-07-06', label:'7/06 周一', isWeekend:false},
+  {date:'2026-07-07', label:'7/07 周二', isWeekend:false},
+  {date:'2026-07-08', label:'7/08 周三', isWeekend:false},
+];
+
+// 种子预约 ~ 每店 16-20 条，周末偏满（密度 50-70%），平日偏空（密度 15-30%）
+let SCHEDULE = [
+  // 红日门店
+  {store:'红日门店', date:'2026-07-01', slot:'09:30', customer:'王女士 (老客)', service:'镜架调校', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-01', slot:'10:30', customer:'刘先生', service:'隐形复购', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-01', slot:'15:00', customer:'陈女士', service:'视力复测', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-02', slot:'10:00', customer:'孙先生', service:'渐进调试', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-02', slot:'16:00', customer:'吴女士', service:'清洗保养', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-03', slot:'09:00', customer:'郑先生', service:'视疲劳检测', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-03', slot:'14:30', customer:'马女士', service:'镜架调校', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'09:00', customer:'李同学', service:'青少年复查', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'09:00', customer:'赵同学', service:'青少年复查', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'09:30', customer:'王同学', service:'青少年复查', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'10:00', customer:'周同学', service:'青少年复查', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'10:00', customer:'吴同学', service:'青少年复查', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'10:30', customer:'郑同学', service:'青少年复查', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'14:00', customer:'孙先生', service:'渐进试戴', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'14:30', customer:'马先生', service:'视力复测', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'15:00', customer:'高女士', service:'清洗调框', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-04', slot:'16:00', customer:'刘先生', service:'隐形选购', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-05', slot:'10:00', customer:'徐女士', service:'渐进调试', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-05', slot:'10:30', customer:'何先生', service:'视力复测', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-05', slot:'11:00', customer:'秦女士', service:'清洗保养', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-05', slot:'14:30', customer:'许同学', service:'青少年复查', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-05', slot:'15:30', customer:'唐先生', service:'渐进试戴', staff:'李师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-06', slot:'10:00', customer:'江先生', service:'镜架调校', staff:'张师傅', source:'预填'},
+  {store:'红日门店', date:'2026-07-07', slot:'14:00', customer:'谢女士', service:'视力复测', staff:'李师傅', source:'预填'},
+
+  // 大直街店
+  {store:'大直街店', date:'2026-07-01', slot:'10:00', customer:'陈先生', service:'视力复测', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-01', slot:'14:30', customer:'秦女士', service:'镜架调校', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-02', slot:'09:30', customer:'方先生', service:'渐进调试', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-02', slot:'15:00', customer:'许女士', service:'清洗保养', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-03', slot:'10:30', customer:'冯先生', service:'视疲劳检测', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'09:30', customer:'郑先生', service:'渐进调试', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'10:00', customer:'李同学', service:'青少年复查', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'10:30', customer:'王先生', service:'视力复测', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'10:30', customer:'吴先生', service:'镜架调校', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'11:00', customer:'张同学', service:'青少年复查', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'14:00', customer:'马同学', service:'青少年复查', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'15:00', customer:'孙女士', service:'渐进试戴', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-04', slot:'16:00', customer:'刘先生', service:'清洗保养', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-05', slot:'09:30', customer:'胡先生', service:'视力复测', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-05', slot:'10:30', customer:'金女士', service:'清洗调框', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-05', slot:'14:00', customer:'吕先生', service:'隐形选购', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-05', slot:'15:00', customer:'施女士', service:'渐进调试', staff:'刘师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-06', slot:'14:30', customer:'夏先生', service:'视疲劳检测', staff:'王师傅', source:'预填'},
+  {store:'大直街店', date:'2026-07-07', slot:'10:00', customer:'魏女士', service:'清洗保养', staff:'刘师傅', source:'预填'},
+
+  // 万达广场店
+  {store:'万达广场店', date:'2026-07-01', slot:'09:00', customer:'许女士', service:'清洗保养', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-01', slot:'11:00', customer:'董同学', service:'视力复测', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-01', slot:'15:30', customer:'夏女士', service:'镜架调校', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-02', slot:'10:00', customer:'陆先生', service:'视疲劳检测', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-02', slot:'16:30', customer:'林女士', service:'隐形选购', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-03', slot:'10:30', customer:'高先生', service:'渐进调试', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'09:00', customer:'秦女士', service:'渐进调试', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'10:00', customer:'王同学', service:'青少年复查', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'10:00', customer:'李同学', service:'青少年复查', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'10:30', customer:'刘先生', service:'视力复测', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'14:00', customer:'孙女士', service:'清洗调框', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'14:30', customer:'周先生', service:'渐进试戴', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-04', slot:'15:00', customer:'吴先生', service:'隐形选购', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-05', slot:'10:00', customer:'郭女士', service:'渐进调试', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-05', slot:'11:00', customer:'罗先生', service:'视力复测', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-05', slot:'14:30', customer:'梁女士', service:'清洗保养', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-05', slot:'16:00', customer:'宋先生', service:'隐形选购', staff:'陈师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-06', slot:'10:30', customer:'朱女士', service:'镜架调校', staff:'吴师傅', source:'预填'},
+  {store:'万达广场店', date:'2026-07-07', slot:'15:30', customer:'潘先生', service:'渐进调试', staff:'陈师傅', source:'预填'},
+];
+
+// 查指定门店指定日期指定槽位的占用数
+function bookedCount(store, date, slot){
+  return SCHEDULE.filter(b => b.store===store && b.date===date && b.slot===slot).length;
+}
+function isFull(store, date, slot){ return bookedCount(store, date, slot) >= CAPACITY; }
+function bookingsAt(store, date, slot){
+  return SCHEDULE.filter(b => b.store===store && b.date===date && b.slot===slot);
+}
+// 找门店近 8 天可用空档，返回 [{date, label, slot, isWeekend}]，按"周末优先 → 时间正序"排序
+function findOpenSlots(store, limit=20){
+  const out = [];
+  for(const day of DAYS){
+    for(const slot of SLOTS){
+      if(!isFull(store, day.date, slot)){
+        out.push({...day, slot});
+      }
+    }
+  }
+  // 周末空档优先
+  out.sort((a,b) => (b.isWeekend?1:0) - (a.isWeekend?1:0));
+  return out.slice(0, limit);
+}
+// 取 2 个代表性空档（一个周末上午、一个非周末下午），用于话术
+function pickSlotsForTalk(store){
+  const opens = findOpenSlots(store, 999);
+  const morningWeekend = opens.find(o => o.isWeekend && o.slot < '12:00');
+  const afternoonAny = opens.find(o => o.slot >= '14:00' && (!morningWeekend || o.date !== morningWeekend.date));
+  const fallback = opens[0];
+  return [morningWeekend, afternoonAny, fallback].filter(Boolean).slice(0,2);
+}
+
+function daysBetween(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr);
+  return Math.floor((TODAY - d) / 86400000);
+}
+function yearsBetween(dateStr){
+  const days = daysBetween(dateStr);
+  return days==null ? null : (days/365).toFixed(1);
+}
+
+// ======================== Rule engine ========================
+// 返回 {trigger: bool, reason, action, priority, ruleId}
+function evaluate(c){
+  const sinceVisit = daysBetween(c['末次到店']);
+  const sinceFit = daysBetween(c['上次配镜']);
+  const tag = c['主标签'];
+  const age = c['年龄'];
+
+  // —— 避让 ——
+  if(sinceVisit != null && sinceVisit <= REST_WINDOW){
+    return {trigger:false, reason:`末次到店${sinceVisit}天前，本周避让`, skipKind:'rest', sinceVisit, sinceFit};
+  }
+
+  // —— 主标签规则 ——
+  if(tag === '青少年防控周期'){
+    // 防控镜孩子需每 2-3 个月回店一次：过 45 天避让窗口即触发
+    if(sinceVisit != null && sinceVisit > REST_WINDOW)
+      return {trigger:true, ruleId:'YOUTH', priority:'高', reason:`防控镜孩子已 ${sinceVisit} 天未回店，需视力复查 + 镜架调校`, action:'邀约视力复查 + 镜架调校', sinceVisit, sinceFit};
+  }
+  if(tag === '隐形用量'){
+    if(sinceFit && sinceFit >= 60)
+      return {trigger:true, ruleId:'LENS', priority:'高', reason:`隐形佩戴周期临近，需补货`, action:'询问余量 + 补货', sinceVisit, sinceFit};
+  }
+  if(tag === '渐进调整'){
+    if(sinceFit && sinceFit >= 180)
+      return {trigger:true, ruleId:'PROG', priority:'高', reason:`渐进片配镜${(sinceFit/365).toFixed(1)}年，半年回访点`, action:'邀约渐进片调试 + 验光复测', sinceVisit, sinceFit};
+  }
+  if(tag === '开车框架年限'){
+    if(sinceFit && sinceFit >= 365)
+      return {trigger:true, ruleId:'DRIVE', priority:'中', reason:`驾驶镜佩戴满 ${(sinceFit/365).toFixed(1)} 年，进入夏季强光季`, action:'邀约视力复测 + 偏光检测', sinceVisit, sinceFit};
+  }
+  if(tag === '框架年限'){
+    if(sinceFit && sinceFit >= 540) // 1.5 年
+      return {trigger:true, ruleId:'FRAME', priority:'中', reason:`旧镜已使用 ${(sinceFit/365).toFixed(1)} 年，镜片磨损与度数风险`, action:'邀约免费验光评估', sinceVisit, sinceFit};
+  }
+  if(tag === '损坏维修'){
+    if(sinceVisit && sinceVisit >= 180)
+      return {trigger:true, ruleId:'REPAIR', priority:'低', reason:`半年未到店，售后档案显示常需调校`, action:'邀约免费保养 + 调校', sinceVisit, sinceFit};
+  }
+  if(tag === '45岁以上近视' || tag === '48岁以上近视'){
+    if(age >= 45 && !((c['配镜明细']||'').includes('渐进')))
+      return {trigger:true, ruleId:'PRESBY', priority:'中', reason:`${age} 岁近视客户，尚未配渐进/老花，可推荐试戴`, action:'邀约渐进多焦点体验', sinceVisit, sinceFit};
+  }
+  if(tag === '商务形象'){
+    if(sinceFit && sinceFit >= 365)
+      return {trigger:true, ruleId:'BIZ', priority:'低', reason:`商务客户配镜满 1 年，新款上市可触达`, action:'新款邀约试戴', sinceVisit, sinceFit};
+  }
+  if(tag === '太阳镜客户'){
+    if(sinceFit && sinceFit >= 90 && sinceFit <= 120)
+      return {trigger:true, ruleId:'SUN', priority:'低', reason:`太阳镜购买满 3 个月，回访点`, action:'回访佩戴感受 + 清洁', sinceVisit, sinceFit};
+  }
+  if(tag === '办公室人员'){
+    if(sinceFit && sinceFit >= 365)
+      return {trigger:true, ruleId:'OFFICE', priority:'中', reason:`办公客户配镜满 1 年，视疲劳风险`, action:'邀约视疲劳检测 + 防蓝光方案', sinceVisit, sinceFit};
+  }
+  if(tag === '45-70岁以上办公室人员'){
+    if(age >= 45 && sinceFit && sinceFit >= 365)
+      return {trigger:true, ruleId:'OFFICE_OLD', priority:'中', reason:`${age} 岁办公客户，远近切换可能费力`, action:'邀约渐进体验 + 验光', sinceVisit, sinceFit};
+  }
+  if(tag === 'VIP回馈'){
+    return {trigger:true, ruleId:'VIP', priority:'低', reason:`VIP 会员季度专属福利`, action:'通知到店领取福利', sinceVisit, sinceFit};
+  }
+
+  return {trigger:false, reason:`标签 ${tag} 当前不在触发窗口`, skipKind:'window', sinceVisit, sinceFit};
+}
+
+// ======================== Talk template engine ========================
+// —— 档案钩子：从客户字段抽出可落到话术里的短语 ——
+function clipFirst(s, maxLen=18){
+  if(!s) return '';
+  const seg = s.split(/[，、。,]/).map(x=>x.trim()).filter(Boolean)[0] || s;
+  return seg.length > maxLen ? seg.slice(0, maxLen) : seg;
+}
+function needHook(c){ return clipFirst(c['视觉需求']||'', 18); }
+function fatigueHook(c){ return clipFirst(c['视疲劳']||'', 14); }
+function healthFlag(c){
+  const h = c['眼健康']||'';
+  if(/白内障|眼底|眼压偏高/.test(h)) return 'periodic';
+  return '';
+}
+
+function genFirst(c, ev){
+  const name = c['姓名'];
+  const callName = title(c);
+  const old = c['配镜明细'] || '';
+  const fitYear = (c['上次配镜']||'').slice(0,4);
+  const subTag = c['副标签'];
+  const need = needHook(c);
+  const fatigue = fatigueHook(c);
+  let main = '';
+
+  switch(ev.ruleId){
+    case 'YOUTH':
+      main = [
+        `${callName}您好，${name}这副离焦防控镜已经佩戴 ${Math.round(ev.sinceFit/30)} 个月。`,
+        fatigue ? `上次来店您提到${pron(c)}「${fatigue}」，` : '',
+        need ? `又是${need}的用眼强度，` : '',
+        `本周方便带${pron(c)}过来做一次视力复查和镜架调校吗？`
+      ].join('');
+      break;
+    case 'PROG':
+      main = [
+        `${callName}您好，您 ${fitYear} 年那副渐进镜已经戴了 ${(ev.sinceFit/365).toFixed(1)} 年。`,
+        need ? `看您档案平时${need}，` : '',
+        fatigue ? `您也提到过「${fatigue}」。` : '',
+        `渐进片戴久后镜架前倾角和面弯容易偏移，本周方便回店做一次免费微调和视力复测吗？`
+      ].join('');
+      break;
+    case 'FRAME':
+      main = [
+        `${callName}您好，您 ${fitYear} 年那副${shortFrame(old)}已经戴了 ${(ev.sinceFit/365).toFixed(1)} 年。`,
+        need ? `看您档案是${need}的用眼场景，` : '',
+        fatigue ? `您也提到过「${fatigue}」。` : '',
+        `镜片用久会有划痕磨损，度数也可能悄悄变化，本周方便回店做一次免费验光评估吗？`
+      ].join('');
+      break;
+    case 'DRIVE':
+      main = [
+        `${callName}您好，您 ${fitYear} 年那副驾驶镜用了 ${(ev.sinceFit/365).toFixed(1)} 年。`,
+        need ? `您${need}的用眼强度，` : '',
+        `又到夏季强光和夜间远光，`,
+        fatigue ? `您也提到过「${fatigue}」。` : '',
+        `本周方便回店做一次视力复测和偏光镜片效果检测吗？安全第一。`
+      ].join('');
+      break;
+    case 'PRESBY':
+      main = [
+        `${callName}您好，您近视多年，到了 ${c['年龄']} 这个年纪，`,
+        need ? `平时${need}，` : '',
+        `看近处（手机、菜单）是不是开始有点费力？`,
+        fatigue ? `您之前提到「${fatigue}」，多半就是这个信号。` : '',
+        `店里到了渐进多焦点试戴片，远近一副搞定，本周方便过来免费体验一下吗？`
+      ].join('');
+      break;
+    case 'OFFICE':
+    case 'OFFICE_OLD':
+      main = [
+        `${callName}您好，您 ${fitYear} 年那副${shortFrame(old)}已经用了 ${(ev.sinceFit/365).toFixed(1)} 年。`,
+        need ? `${need}的工作强度，` : '',
+        fatigue ? `您也提到过「${fatigue}」。` : '',
+        `本周方便回店做一次视疲劳检测吗？顺便看看防蓝光膜层有没有衰减。`
+      ].join('');
+      break;
+    case 'LENS':
+      main = [
+        `${callName}您好，您日常戴隐形，`,
+        need ? `${need}的用眼习惯，` : '',
+        fatigue ? `又提到过「${fatigue}」。` : '',
+        `${fitYear} 年那批隐形按周期算快用完了，店里新到了高透氧批次，您看是顺丰到家，还是到店选新款顺便做裂隙灯检查？`
+      ].join('');
+      break;
+    case 'REPAIR':
+      main = [
+        `${callName}您好，您已经有 ${ev.sinceVisit} 天没回店了。看您档案我们之前帮您做过镜架调校，`,
+        need ? `平时${need}也容易让镜架受损，` : '',
+        `抽空路过进来吧，我帮您免费换鼻托、紧固螺丝，顺便做超声波清洗。`
+      ].join('');
+      break;
+    case 'BIZ':
+      main = [
+        `${callName}您好，`,
+        need ? `看您档案是${need}的工作性质，` : '',
+        `店里新到了几款超薄纯钛和碳纤维商务镜架，轻便显气质，特别适合您。本周方便过来试戴吗？`
+      ].join('');
+      break;
+    case 'SUN':
+      main = `${callName}您好，您买的太阳镜戴了 ${Math.round(ev.sinceFit/30)} 个月了，镜面缝隙容易藏污垢影响偏光效果。本周方便回店做一次深层清洁和紫外线测试吗？`;
+      break;
+    default:
+      main = `${callName}您好，看到您已经 ${ev.sinceVisit} 天没回店了，本周方便过来做一次免费视力复查和镜架保养吗？`;
+  }
+
+  // —— 副标签关怀补充 ——
+  let extra = '';
+  if(subTag === '家庭关怀'){
+    const fam = c['家庭视力']||'';
+    if(fam && !fam.includes('正常')){
+      extra += ` 另外您之前提到「${fam}」，要不要一起带过来看看？`;
+    }
+  } else if(subTag === '损坏维修'){
+    extra += ` 顺便我帮您把镜架做个免费清洗调校。`;
+  } else if(subTag === '隐形用量' && ev.ruleId !== 'LENS'){
+    extra += ` 您之前的隐形眼镜也快到补货周期了，可以一起看看。`;
+  }
+
+  // —— 眼健康关怀（涉及定期复查的客户）—— 不点名疾病，只说"定期复查"
+  if(healthFlag(c) === 'periodic' && ev.ruleId !== 'YOUTH'){
+    extra += ' 您之前提到要做定期复查，正好可以一起记录一下数据。';
+  }
+
+  return main + extra;
+}
+
+function title(c){
+  const sex = c['性别']; const age = c['年龄'];
+  if(age < 18) return `${c['姓名'].slice(0,1)}${sex==='男'?'同学爸爸':'同学妈妈'}`;
+  if(age >= 50 && sex === '男') return `${c['姓名'].slice(0,1)}哥`;
+  if(age >= 50 && sex === '女') return `${c['姓名'].slice(0,1)}姐`;
+  if(age >= 65) return sex==='男'?'叔叔':'阿姨';
+  return sex==='男'?`${c['姓名'].slice(0,1)}先生`:`${c['姓名'].slice(0,1)}女士`;
+}
+function pron(c){return c['年龄']<18?'孩子':'您'}
+function shortFrame(f){
+  return f.replace(/\+.*$/, '').trim() || '眼镜';
+}
+
+// 4 种改写：每种都基于客户档案重新组装话术，而不是简单字符替换
+// 入参 (c, ev) → 完整新话术
+const REWRITES = {
+  // 专业版：保留专业术语 + 复测/复查/折射率/前倾角等行话
+  professional: (c, ev) => {
+    const fitYear = (c['上次配镜']||'').slice(0,4);
+    const old = c['配镜明细'] || '';
+    const oldFrame = shortFrame(old);
+    const callName = titleFormal(c);
+    const need = clipFirst(c['视觉需求']||'', 18);
+    const fatigue = clipFirst(c['视疲劳']||'', 14);
+    const map = {
+      YOUTH: `${callName}，${c['姓名']}佩戴的离焦防控镜片已使用 ${Math.round(ev.sinceFit/30)} 个月。为评估眼轴增长与屈光度变化，建议本周到店进行视力复测、镜架前倾角校准及佩戴位置检查，整个流程约 15 分钟。`,
+      PROG: `${callName}，您于 ${fitYear} 年验配的渐进多焦点镜片已使用 ${(ev.sinceFit/365).toFixed(1)} 年，镜架前倾角与面弯易随时间偏移，可能影响视野舒适度。建议本周到店做一次镜架几何参数校准与屈光度复测。`,
+      FRAME: `${callName}，您 ${fitYear} 年配的${oldFrame}已使用 ${(ev.sinceFit/365).toFixed(1)} 年，镜片膜层与折射率性能可能出现衰减。建议本周到店做免费屈光度复测与镜片状态评估。`,
+      DRIVE: `${callName}，您 ${fitYear} 年验配的驾驶镜已使用 ${(ev.sinceFit/365).toFixed(1)} 年。考虑到夏季强光及夜间炫光对驾驶视觉的挑战，建议进行偏光膜层效果检测与远距离视力复测。`,
+      PRESBY: `${callName}，您 ${c['年龄']} 岁，结合${need || '当前用眼场景'}与${fatigue ? '"'+fatigue+'"' : '近距离视疲劳'}的表现，符合早期老视体征。店内备有渐进多焦点试戴片，建议预约一次屈光度评估及试戴体验。`,
+      OFFICE: `${callName}，您 ${fitYear} 年的${oldFrame}已使用 ${(ev.sinceFit/365).toFixed(1)} 年，长期屏幕用眼下，建议到店进行视疲劳量表评估与防蓝光膜层衰减检测。`,
+      OFFICE_OLD: `${callName}，您 ${fitYear} 年的${oldFrame}已使用 ${(ev.sinceFit/365).toFixed(1)} 年。鉴于您 ${c['年龄']} 岁，建议加做调节力评估及渐进片试戴评估。`,
+      LENS: `${callName}，您日常佩戴隐形眼镜，按周期推算近日将耗尽。建议本周到店做一次裂隙灯检查与角膜健康评估，再决定补货品类。`,
+      REPAIR: `${callName}，您距离上次到店已 ${ev.sinceVisit} 天。建议进行一次镜架几何复位、螺丝紧固与超声波清洗，全程免费。`,
+      BIZ: `${callName}，门店本期上架超薄纯钛与碳纤维商务镜架系列，重量 18 克以内，建议预约试戴评估。`,
+      SUN: `${callName}，您的太阳镜已使用 ${Math.round(ev.sinceFit/30)} 个月，建议到店做一次偏光效率与紫外线透过率检测。`,
+    };
+    return map[ev.ruleId] || `${callName}，建议本周到店进行一次免费屈光复测与镜架评估。`;
+  },
+
+  // 亲切版：拉家常 + 不卡时间，去掉"建议/评估/复测"等正式词
+  friendly: (c, ev) => {
+    const fitYear = (c['上次配镜']||'').slice(0,4);
+    const old = shortFrame(c['配镜明细']||'');
+    const callName = titleCasual(c);
+    const need = clipFirst(c['视觉需求']||'', 18);
+    const fatigue = clipFirst(c['视疲劳']||'', 14);
+    const map = {
+      YOUTH: `${callName}，${c['姓名']}这副眼镜戴了快 ${Math.round(ev.sinceFit/30)} 个月啦~ ${fatigue ? `上次您还说${pron(c)}「${fatigue}」，` : ''}孩子写作业多镜架容易松，您哪天顺路带${pron(c)}过来一下呗，几分钟就好~`,
+      PROG: `${callName}，您那副渐进片戴了好几年啦${fatigue ? `，您之前还提到「${fatigue}」` : ''}~ 哪天路过店里进来一下，我帮您调一调，戴着会舒服很多~`,
+      FRAME: `${callName}，您 ${fitYear} 年那副${old}戴这么久也辛苦它啦~ ${need ? `平时${need}，` : ''}抽空过来一下，我帮您看看镜片，做个免费清洗~`,
+      DRIVE: `${callName}，您那副开车的眼镜戴几年啦~ 这天儿太阳又大又晃，您路过店里我帮您测一下镜片偏光怎么样了，安全要紧~`,
+      PRESBY: `${callName}，您看手机看菜单是不是有时候要拿远点看~ 这其实很正常的，店里有渐进片可以免费试戴一下，您感受感受，不试不要紧的~`,
+      OFFICE: `${callName}，您天天对着电脑眼睛肯定累${fatigue ? `，您也说过「${fatigue}」` : ''}~ 抽空来一下，我帮您看看防蓝光是不是还管用，顺手做个清洗~`,
+      OFFICE_OLD: `${callName}，您那副眼镜戴一阵子啦~ 您现在这个年纪看近的有点费劲很正常，店里现在有渐进片可以试戴，您来感受一下，反正也不要钱~`,
+      LENS: `${callName}，您那批隐形差不多该补啦~ 新到了一批挺舒服的，您看是给您寄过来，还是路过店里挑一下也行~`,
+      REPAIR: `${callName}，您好久没来啦~ 哪天路过店里进来坐坐，我帮您把眼镜免费洗洗、调调，戴着精神点~`,
+      BIZ: `${callName}，店里新到几款轻得很的钛架，您这种气质戴着特别合适~ 哪天有空过来试一下呗，不买都没关系~`,
+      SUN: `${callName}，您那副墨镜戴一阵子啦~ 抽空来一下我帮您深度清洗一下，顺便看看新款~`,
+    };
+    return map[ev.ruleId] || `${callName}，好久没见啦，路过店里进来坐坐呗~`;
+  },
+
+  // 简短版：三句话以内，砍掉所有钩子句和关怀句，只保留主诉求
+  short: (c, ev) => {
+    const fitYear = (c['上次配镜']||'').slice(0,4);
+    const old = shortFrame(c['配镜明细']||'');
+    const callName = title(c);
+    const map = {
+      YOUTH: `${callName}您好，${c['姓名']}防控镜佩戴 ${Math.round(ev.sinceFit/30)} 个月，建议本周到店复查。`,
+      PROG: `${callName}您好，您渐进片戴了 ${(ev.sinceFit/365).toFixed(1)} 年，建议回店免费微调。`,
+      FRAME: `${callName}您好，您 ${fitYear} 年那副${old}戴了 ${(ev.sinceFit/365).toFixed(1)} 年，建议回店免费验光。`,
+      DRIVE: `${callName}您好，您的驾驶镜用了 ${(ev.sinceFit/365).toFixed(1)} 年，建议做一次偏光检测。`,
+      PRESBY: `${callName}您好，店里到了渐进试戴片，本周方便过来免费体验吗？`,
+      OFFICE: `${callName}您好，您的镜片用了 ${(ev.sinceFit/365).toFixed(1)} 年，建议做一次视疲劳检测。`,
+      OFFICE_OLD: `${callName}您好，您的镜片用了 ${(ev.sinceFit/365).toFixed(1)} 年，建议复查 + 渐进试戴。`,
+      LENS: `${callName}您好，您的隐形快用完了，店里新到了一批，是否寄到家？`,
+      REPAIR: `${callName}您好，您已 ${ev.sinceVisit} 天未回店，本周方便过来做免费保养吗？`,
+      BIZ: `${callName}您好，店里新到了商务镜架，本周方便过来试戴吗？`,
+      SUN: `${callName}您好，您的太阳镜戴了 ${Math.round(ev.sinceFit/30)} 个月，建议来店做一次清洁。`,
+    };
+    return map[ev.ruleId] || `${callName}您好，本周方便过来做一次免费保养吗？`;
+  },
+
+  // 加周末时间：从该门店真实预约表里查 2 个可用空档
+  weekend: (c, ev) => {
+    const base = genFirst(c, ev);
+    const slots = pickSlotsForTalk(c['门店']);
+    if(!slots.length) return base + ' 本周时段都比较紧，您方便的时间告诉我，我去帮您协调。';
+    const phrased = slots.map(s => `${s.label.split(' ')[1]} ${s.slot}`).join(' 或 ');
+    return base + ` ${phrased} 都可以，您看哪个时间方便？我帮您留位。`;
+  },
+};
+
+// 称呼变种：专业版偏书面，亲切版更口语
+function titleFormal(c){
+  const sex = c['性别']; const age = c['年龄']; const x = c['姓名'].slice(0,1);
+  if(age < 18) return `${x}同学家长`;
+  if(age >= 65) return sex==='男'?`${x}先生`:`${x}女士`;
+  if(age >= 50) return sex==='男'?`${x}先生`:`${x}女士`;
+  return sex==='男'?`${x}先生`:`${x}女士`;
+}
+function titleCasual(c){
+  const sex = c['性别']; const age = c['年龄']; const x = c['姓名'].slice(0,1);
+  if(age < 18) return sex==='男'?`${x}同学爸爸`:`${x}同学妈妈`;
+  if(age >= 60) return sex==='男'?'叔':'阿姨';
+  if(age >= 35) return sex==='男'?`${x}哥`:`${x}姐`;
+  return sex==='男'?`${x}哥`:`${x}姐`;
+}
+
+// ======================== Reply scenarios (二次推进) ========================
+const REPLIES = [
+  {id:'fine',title:'现在戴着还行',desc:'觉得没明显问题',list:[
+    '那挺好的。这次主要不是让您换眼镜，是免费帮您检查一下镜架和佩戴位置，几分钟就完事。',
+    '没有明显不舒服也建议定期看一下，很多镜架变松不会主动察觉。到店免费检查，不会推销。',
+    '您放心，这次就是售后保养，确认戴得还合适就行，不会一上来就推换镜。'
+  ]},
+  {id:'busy',title:'最近没时间',desc:'有意愿但时间冲突',list:[
+    '理解，不用专门跑一趟。您看周末或者顺路哪天方便？我们这边大概十几分钟就好。',
+    '没关系，我先帮您留个灵活时间，您哪天路过提前说一声，验光师给您插队。',
+    '可以晚点也没关系。我先记下，下周再约一个不耽误您的时间。'
+  ]},
+  {id:'price',title:'多少钱？',desc:'关注费用',list:[
+    '这次基础复查和镜架调校都是免费的，主要看佩戴状态。如果确实需要调整再单独跟您说明，您再决定。',
+    '免费的，您不用担心。到店先做视力复查、调校和清洗，不会一上来就推荐换镜。',
+    '不是收费项目，是售后服务。只有真要换配件或重新配镜才会单独跟您确认。'
+  ]},
+  {id:'increase',title:'是不是度数又涨了？',desc:'担心检查结果',list:[
+    '现在不能直接判断，所以才建议复查一下。我们会把这次结果和上次记录对比，再给您建议。',
+    '不一定是度数变化，也可能是镜架松了或佩戴位置偏了。免费检查清楚再决定要不要进一步验光。',
+    '您先别担心，我们先做基础复查，把数据和上次对比后再告诉您。'
+  ]},
+  {id:'askfamily',title:'我先问问家里人',desc:'需要商量',list:[
+    '好的，您先商量。我把这次免费复查和调校的内容发您，方便您转给家里人看。',
+    '没问题。这次主要是免费调校和复查视力，不是消费项目。商量好告诉我就行。',
+    '好的，我先把周末可预约时间发您，您看家里哪天方便再定。'
+  ]},
+  {id:'no',title:'不用了',desc:'暂时拒绝',list:[
+    '好的，那我先不打扰。后面如果您觉得视物吃力或者眼镜变松，随时联系我。',
+    '好的。我这边备注暂不跟进，后续有不舒服直接找我。',
+    '没问题，我帮您留个档。下次保养季再问候您。'
+  ]},
+];
+
+// ======================== State ========================
+let storeFilter = 'ALL';
+let activeCust = null;
+let activeReply = 'fine';
+
+// ======================== Util ========================
+const $ = s=>document.querySelector(s);
+const $$ = s=>Array.from(document.querySelectorAll(s));
+const PAGES = {
+  tasks:['本周清单','规则筛选后，本周实际需要联系的客户'],
+  customer:['客户详情','档案信息与触发原因'],
+  message:['首次话术','基于标签模板 + 真实档案生成'],
+  follow:['二次推进','客户回复后的下一句怎么接'],
+  booking:['预约到店','时间、服务项目与提醒'],
+  result:['结果回写','到店服务回写中台，生成后续任务']
+};
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1500)}
+
+function switchView(id){
+  $$('.view').forEach(v=>v.classList.remove('active'));
+  $('#'+id).classList.add('active');
+  $$('.nav button[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===id));
+  $$('.step').forEach(s=>s.classList.toggle('active',s.dataset.step===id));
+  $('#pageTitle').textContent = PAGES[id][0];
+  $('#pageSub').textContent = PAGES[id][1];
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ======================== Render: stats + table ========================
+function activeData(){
+  return CUSTOMERS.filter(c => storeFilter==='ALL' || c['门店']===storeFilter);
+}
+
+function renderStats(){
+  const all = activeData();
+  const evs = all.map(c=>({c, ev:evaluate(c)}));
+  const triggered = evs.filter(x=>x.ev.trigger);
+  const high = triggered.filter(x=>x.ev.priority==='高').length;
+  const mid = triggered.filter(x=>x.ev.priority==='中').length;
+  const low = triggered.filter(x=>x.ev.priority==='低').length;
+  const rested = evs.filter(x=>x.ev.skipKind==='rest').length;
+  $('#statsBar').innerHTML = `
+    <div class="stat"><b>${all.length}</b><span>覆盖客户</span></div>
+    <div class="stat"><b>${triggered.length}</b><span>本周触发</span></div>
+    <div class="stat"><b>${high}</b><span>高优先级</span></div>
+    <div class="stat"><b>${mid+low}</b><span>中 / 低优先级</span></div>
+    <div class="stat"><b>${rested}</b><span>近 45 天到店，避让</span></div>
+  `;
+}
+
+function renderTasks(){
+  const list = activeData()
+    .map(c => ({c, ev:evaluate(c)}))
+    .filter(x => x.ev.trigger)
+    .sort((a,b) => {
+      const pri = {'高':0,'中':1,'低':2};
+      if(pri[a.ev.priority] !== pri[b.ev.priority]) return pri[a.ev.priority]-pri[b.ev.priority];
+      return (b.ev.sinceVisit||0) - (a.ev.sinceVisit||0);
+    });
+
+  if(activeCust && !list.some(x => x.c['客户编号'] === activeCust['客户编号'])){
+    activeCust = list[0]?.c || null;
+  }
+  if(!activeCust && list.length) activeCust = list[0].c;
+
+  const tbody = $('#taskRows');
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><b>本周无触发任务</b>切换门店或调整规则窗口后再看。</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(({c, ev}) => {
+    const isActive = activeCust && activeCust['客户编号'] === c['客户编号'];
+    const priClass = ev.priority==='高'?'chip-high':ev.priority==='中'?'chip-mid':'chip-low';
+    return `<tr class="${isActive?'active':''}" data-id="${c['客户编号']}">
+      <td class="col-name">${c['姓名']}<div style="font-size:11px;color:var(--ink-3);margin-top:2px;font-variant-numeric:tabular-nums">${c['客户编号']} · ${c['年龄']}岁${c['性别']}</div></td>
+      <td>${c['门店'].replace('门店','').replace('广场店','广场')}</td>
+      <td><span class="chip chip-days">${ev.sinceVisit} 天</span></td>
+      <td class="col-tag">${c['主标签']}</td>
+      <td style="max-width:280px">${ev.reason}</td>
+      <td><span class="chip ${priClass}">${ev.priority}</span></td>
+      <td>${ev.action}</td>
+      <td><button class="btn btn-secondary btn-sm" data-open="${c['客户编号']}">查看</button></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr[data-id]').forEach(tr=>{
+    tr.onclick = ()=>{
+      activeCust = list.find(x=>x.c['客户编号']===tr.dataset.id).c;
+      renderTasks(); renderCustomer(); renderMessage(); renderBooking(); renderResult();
+    };
+  });
+  tbody.querySelectorAll('[data-open]').forEach(b=>{
+    b.onclick = (e)=>{
+      e.stopPropagation();
+      activeCust = list.find(x=>x.c['客户编号']===b.dataset.open).c;
+      renderTasks(); renderCustomer(); renderMessage(); renderBooking(); renderResult();
+      switchView('customer');
+    };
+  });
+}
+
+// ======================== Render: customer ========================
+function renderCustomer(){
+  if(!activeCust){ $('#custHeadName').textContent='暂无客户'; return }
+  const c = activeCust; const ev = evaluate(c);
+  $('#custHeadName').textContent = `${c['姓名']} · ${c['客户编号']}`;
+
+  $('#custKv').innerHTML = `
+    <div class="kv"><div class="k">门店</div><div class="v">${c['门店']}</div></div>
+    <div class="kv"><div class="k">年龄 · 性别</div><div class="v">${c['年龄']} 岁 · ${c['性别']}</div></div>
+    <div class="kv"><div class="k">会员等级</div><div class="v">${c['会员等级']}</div></div>
+    <div class="kv"><div class="k">客单价区间</div><div class="v">¥${c['客单价区间']}</div></div>
+    <div class="kv"><div class="k">末次到店</div><div class="v">${c['末次到店']} · ${ev.sinceVisit ?? '—'} 天前</div></div>
+    <div class="kv"><div class="k">上次配镜</div><div class="v">${c['上次配镜']} · ${ev.sinceFit ? (ev.sinceFit/365).toFixed(1)+' 年前' : '—'}</div></div>
+  `;
+
+  $('#custFacts').innerHTML = `
+    <div class="fact"><b>戴镜历史</b><span>${c['戴镜历史']}</span></div>
+    <div class="fact"><b>屈光度</b><span>${c['屈光度']}</span></div>
+    <div class="fact"><b>视觉需求</b><span>${c['视觉需求']}</span></div>
+    <div class="fact"><b>视疲劳</b><span>${c['视疲劳']}</span></div>
+    <div class="fact"><b>建议方案</b><span>${c['建议方案']}</span></div>
+    <div class="fact"><b>配镜明细</b><span>${c['配镜明细']}</span></div>
+    <div class="fact"><b>家庭视力</b><span>${c['家庭视力']}</span></div>
+    <div class="fact"><b>售后记录</b><span>${c['售后记录']}</span></div>
+  `;
+
+  $('#aiReason').textContent = ev.trigger ? ev.reason : '此客户当前不在触发窗口';
+  $('#aiSuggest').textContent = ev.trigger ? `建议动作：${ev.action}。优先级 ${ev.priority}。` : '本周不打扰。';
+  $('#tagPri').textContent = c['主标签'];
+  $('#tagSec').textContent = c['副标签'] || '—';
+}
+
+// ======================== Render: message ========================
+let firstBase = '';
+function renderMessage(){
+  if(!activeCust) return;
+  const c = activeCust; const ev = evaluate(c);
+  firstBase = ev.trigger ? genFirst(c, ev) : `${title(c)}您好，本周不在触发窗口。`;
+  $('#firstMessage').value = firstBase;
+  $('#msgBasis').innerHTML = `
+    <div class="kv"><div class="k">联系对象</div><div class="v">${c['姓名']} · ${c['电话']}</div></div>
+    <div class="kv"><div class="k">触达渠道</div><div class="v">企微 · ${c['微信']}</div></div>
+    <div class="kv"><div class="k">核心理由</div><div class="v">${ev.reason || '—'}</div></div>
+    <div class="kv"><div class="k">建议服务</div><div class="v">${ev.action || '—'}</div></div>
+    <div class="kv"><div class="k">主标签模板</div><div class="v">${c['主标签']}</div></div>
+    <div class="kv"><div class="k">副标签补充</div><div class="v">${c['副标签']||'—'}</div></div>
+  `;
+}
+
+// ======================== Render: follow ========================
+function renderReplies(){
+  $('#replyTabs').innerHTML = REPLIES.map(r=>`
+    <button class="reply-item ${r.id===activeReply?'active':''}" data-reply="${r.id}">
+      <b>客户说：${r.title}</b><span>${r.desc}</span>
+    </button>
+  `).join('');
+  const item = REPLIES.find(r=>r.id===activeReply);
+  $('#replySuggestions').innerHTML = item.list.map((t,i)=>`
+    <div class="reply-suggestion"><div class="label">AI 回复 ${i+1}</div><p>${t}</p></div>
+  `).join('');
+  $$('[data-reply]').forEach(b=>b.onclick=()=>{activeReply=b.dataset.reply; renderReplies()});
+}
+
+// ======================== Render: booking ========================
+let pendingBooking = null;  // {store,date,slot,customer,service,staff} 暂存中的新预约
+let confirmedBooking = null; // 同结构，确认后的当次预约
+
+function renderBooking(){
+  if(!activeCust) return;
+  const c = activeCust; const ev = evaluate(c);
+
+  $('#bookingTitle').textContent = `${c['门店']} 预约日历`;
+  $('#bookCustomer').value = `${c['姓名']} · ${c['客户编号']}`;
+  $('#bookStore').value = c['门店'];
+  if(!$('#bookingService').value) $('#bookingService').value = ev.action || '视力复查 · 镜架调校 · 清洗保养';
+
+  // 验光师下拉
+  const staffByStore = {'红日门店':['李师傅','张师傅'],'大直街店':['王师傅','刘师傅'],'万达广场店':['陈师傅','吴师傅']};
+  const staffs = staffByStore[c['门店']] || ['—'];
+  $('#bookStaff').innerHTML = staffs.map(s=>`<option>${s}</option>`).join('');
+
+  // 默认空预约状态
+  if(!pendingBooking || pendingBooking.customer !== c['客户编号']){
+    pendingBooking = null;
+    $('#bookDate').value = ''; $('#bookSlot').value = '';
+  }
+
+  renderCalendar();
+  renderBookingChat();
+  $('#markArrived').disabled = !confirmedBooking || confirmedBooking.customer !== c['客户编号'];
+}
+
+function renderCalendar(){
+  const c = activeCust; if(!c) return;
+  const store = c['门店'];
+  let html = '<table class="cal"><thead><tr><th class="slot-head">时段</th>';
+  for(const day of DAYS){
+    html += `<th class="${day.isWeekend?'weekend':''}">${day.label.replace(' ','<br>')}</th>`;
+  }
+  html += '</tr></thead><tbody>';
+
+  for(const slot of SLOTS){
+    html += `<tr><td class="slot-head">${slot}</td>`;
+    for(const day of DAYS){
+      const cnt = bookedCount(store, day.date, slot);
+      const isMine = pendingBooking && pendingBooking.date===day.date && pendingBooking.slot===slot;
+      let cls = 'open';
+      if(isMine) cls = 'mine';
+      else if(cnt >= CAPACITY) cls = 'full';
+      else if(cnt > 0) cls = 'half';
+      const label = isMine ? '本次' : cnt === 0 ? '空' : cnt >= CAPACITY ? '满' : `${cnt}/${CAPACITY}`;
+      html += `<td><div class="cell ${cls}" data-date="${day.date}" data-slot="${slot}">${label}</div></td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  $('#calendar').innerHTML = html;
+
+  // 交互
+  $('#calendar').querySelectorAll('.cell').forEach(cell=>{
+    if(cell.classList.contains('full')) return;
+    cell.onclick = ()=>{
+      const date = cell.dataset.date, slot = cell.dataset.slot;
+      pendingBooking = {
+        store, date, slot,
+        customer: c['客户编号'],
+        customerName: c['姓名'],
+        service: $('#bookingService').value || '视力复查',
+        staff: $('#bookStaff').value || '李师傅'
+      };
+      $('#bookDate').value = formatDateLabel(date);
+      $('#bookSlot').value = slot;
+      renderCalendar();
+      renderBookingChat();
+    };
+    cell.onmouseenter = (e)=> showTooltip(e, store, cell.dataset.date, cell.dataset.slot);
+    cell.onmouseleave = hideTooltip;
+    cell.onmousemove = moveTooltip;
+  });
+}
+
+function formatDateLabel(d){
+  const day = DAYS.find(x=>x.date===d);
+  return day ? day.label : d;
+}
+
+function renderBookingChat(){
+  const c = activeCust; if(!c) return;
+  const t = title(c);
+  if(pendingBooking){
+    const label = formatDateLabel(pendingBooking.date);
+    $('#bookingChat').innerHTML = `
+      <div class="bubble me">${t}，和您确认 ${label} ${pendingBooking.slot} 到店：${pendingBooking.service}，由 ${pendingBooking.staff} 接待，全程大概 15 分钟。</div>
+      <div class="bubble customer">好的，到时见。</div>
+    `;
+  } else {
+    $('#bookingChat').innerHTML = `<div class="bubble customer" style="color:var(--ink-3);max-width:100%;text-align:center;background:transparent;border:0">请先在左侧日历点选一个时段</div>`;
+  }
+}
+
+// Tooltip
+let tipEl = null;
+function ensureTip(){ if(!tipEl){ tipEl = document.createElement('div'); tipEl.className='tooltip'; document.body.appendChild(tipEl); } return tipEl; }
+function showTooltip(e, store, date, slot){
+  const list = bookingsAt(store, date, slot);
+  const t = ensureTip();
+  if(!list.length){
+    t.innerHTML = `<b>${formatDateLabel(date)} ${slot}</b>空档 · 可预约`;
+  } else {
+    const lines = list.map(b => `• ${b.customer} <span style="color:#7d7d7d">${b.service}（${b.staff}）</span>`).join('<br>');
+    t.innerHTML = `<b>${formatDateLabel(date)} ${slot}</b>${lines}<span class="ti">${list.length}/${CAPACITY} · ${list.length>=CAPACITY?'已满':'可加一位'}</span>`;
+  }
+  t.classList.add('show');
+  moveTooltip(e);
+}
+function hideTooltip(){ if(tipEl) tipEl.classList.remove('show'); }
+function moveTooltip(e){
+  if(!tipEl) return;
+  const x = Math.min(e.clientX + 14, window.innerWidth - 280);
+  const y = Math.min(e.clientY + 14, window.innerHeight - 100);
+  tipEl.style.left = x + 'px';
+  tipEl.style.top = y + 'px';
+}
+
+// ======================== Render: result ========================
+function renderResult(){
+  if(!activeCust) return;
+  const c = activeCust; const ev = evaluate(c);
+  const isThisCust = confirmedBooking && confirmedBooking.customer === c['客户编号'];
+  const bookingLine = isThisCust
+    ? `${formatDateLabel(confirmedBooking.date)} ${confirmedBooking.slot} · ${confirmedBooking.staff}`
+    : '未生成本次预约';
+  const serviceLine = isThisCust ? confirmedBooking.service : (ev.action || '—');
+  $('#resultKv').innerHTML = `
+    <div class="kv"><div class="k">本次预约</div><div class="v">${bookingLine}</div></div>
+    <div class="kv"><div class="k">到店状态</div><div class="v">${isThisCust?'已到店':'未确认'}</div></div>
+    <div class="kv"><div class="k">本次服务</div><div class="v">${serviceLine}</div></div>
+    <div class="kv"><div class="k">视力变化</div><div class="v">${mockVision(c)}</div></div>
+    <div class="kv"><div class="k">是否换镜</div><div class="v">${ev.ruleId==='FRAME'||ev.ruleId==='PRESBY'?'建议下次到店配新镜':'保持现镜'}</div></div>
+    <div class="kv"><div class="k">导购备注</div><div class="v">${ev.priority==='高'?'重点客户，跟踪反馈':'常规回访'}</div></div>
+  `;
+  $('#nextTasks').innerHTML = nextTasks(c, ev).map(t=>`
+    <div class="timeline-item">
+      <div class="timeline-dot ${t.color}"></div>
+      <div><b>${t.title}</b><span>${t.desc}</span></div>
+      <div class="timeline-date">${t.date}</div>
+    </div>
+  `).join('');
+}
+
+function mockVision(c){
+  const m = (c['屈光度']||'').match(/-(\d+\.\d+)/);
+  if(!m) return '与上次一致';
+  const cur = parseFloat(m[1]);
+  return `右眼 -${cur.toFixed(2)} → -${(cur+0.25).toFixed(2)}（小幅变化）`;
+}
+function nextTasks(c, ev){
+  const out = [];
+  if(ev.ruleId === 'YOUTH'){
+    out.push({color:'blue', title:'3 个月后', desc:'防控镜常规复查', date:'2026-09-30'});
+    out.push({color:'amber', title:'下次到店', desc:'评估是否升级离焦镜片', date:'按到店日'});
+  } else if(ev.ruleId === 'PROG' || ev.ruleId === 'PRESBY'){
+    out.push({color:'blue', title:'6 个月后', desc:'渐进片复查', date:'2026-12-30'});
+    out.push({color:'green', title:'下次新款', desc:'渐进新品到货时通知试戴', date:'按上货日'});
+  } else if(ev.ruleId === 'FRAME' || ev.ruleId === 'DRIVE'){
+    out.push({color:'blue', title:'12 个月后', desc:'年度验光提醒', date:'2027-06-30'});
+    out.push({color:'amber', title:'下次到店', desc:'评估更换镜片或镜架', date:'按到店日'});
+  } else if(ev.ruleId === 'LENS'){
+    out.push({color:'blue', title:'隐形周期到期', desc:'补货提醒', date:'按上次购买周期'});
+  } else {
+    out.push({color:'blue', title:'3 个月后', desc:'服务回访', date:'2026-09-30'});
+  }
+  if(c['副标签']==='家庭关怀'){
+    out.push({color:'green', title:'家庭关怀', desc:`${c['家庭视力']}`, date:'下次到店一并'});
+  }
+  return out;
+}
+
+// ======================== Wire events ========================
+$('#storeSelect').onchange = (e)=>{
+  storeFilter = e.target.value;
+  activeCust = null;
+  renderStats(); renderTasks(); renderCustomer(); renderMessage(); renderBooking(); renderResult();
+};
+
+document.addEventListener('click', e=>{
+  const go = e.target.closest('[data-go]'); if(go) switchView(go.dataset.go);
+});
+$$('.nav button[data-view]').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
+$$('.step').forEach(s=>s.onclick=()=>switchView(s.dataset.step));
+
+$$('[data-rewrite]').forEach(b=>b.onclick=()=>{
+  if(!activeCust) return;
+  const c = activeCust; const ev = evaluate(c);
+  if(!ev.trigger){ toast('该客户本周不在触发窗口'); return; }
+  $('#firstMessage').value = REWRITES[b.dataset.rewrite](c, ev);
+  const labels = {professional:'专业',friendly:'亲切',short:'简短',weekend:'加周末时间'};
+  toast(`已切换 · ${labels[b.dataset.rewrite]}版`);
+});
+$('#sendMessage').onclick = ()=>{ switchView('follow'); toast('已发送 · 客户回复：现在戴着还行') };
+$('#copySuggestion').onclick = ()=>{
+  const t = $('#replySuggestions .reply-suggestion p')?.textContent || '';
+  navigator.clipboard?.writeText(t);
+  toast('已复制');
+};
+
+// 服务项目和验光师变更时，同步到 pendingBooking
+$('#bookingService').oninput = ()=>{ if(pendingBooking){ pendingBooking.service = $('#bookingService').value; renderBookingChat(); } };
+$('#bookStaff').onchange = ()=>{ if(pendingBooking){ pendingBooking.staff = $('#bookStaff').value; renderBookingChat(); } };
+
+// 确认预约：写入 SCHEDULE
+$('#confirmBooking').onclick = ()=>{
+  if(!pendingBooking){ toast('请先在日历选择时段'); return; }
+  if(isFull(pendingBooking.store, pendingBooking.date, pendingBooking.slot)){
+    toast('该时段已满，请改选'); return;
+  }
+  // 写入
+  SCHEDULE.push({
+    store: pendingBooking.store,
+    date: pendingBooking.date,
+    slot: pendingBooking.slot,
+    customer: pendingBooking.customerName + ' (本次邀约)',
+    service: pendingBooking.service,
+    staff: pendingBooking.staff,
+    source: '本次新增'
+  });
+  confirmedBooking = {...pendingBooking};
+  pendingBooking = null;
+  renderCalendar();
+  renderBookingChat();
+  $('#markArrived').disabled = false;
+  toast(`已预约 · ${formatDateLabel(confirmedBooking.date)} ${confirmedBooking.slot}`);
+};
+
+// 标记已到店：跳到结果页
+$('#markArrived').onclick = ()=>{
+  if(!confirmedBooking){ toast('请先确认预约'); return; }
+  renderResult(); switchView('result');
+  toast('已标记到店，服务记录已生成');
+};
+
+// ======================== Init ========================
+renderStats(); renderTasks(); renderCustomer(); renderMessage(); renderReplies(); renderBooking(); renderResult();
+</script>
+</body>
+</html>
